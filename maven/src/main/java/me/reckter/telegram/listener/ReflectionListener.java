@@ -42,13 +42,49 @@ public class ReflectionListener implements GroupCommandListener, GroupMessageLis
         }
     }
 
+
+	private List<String> getArguments(String text) {
+
+		text = text.substring(1);
+		text = text + " ";
+		String[] split = text.split(" ", 2);
+		text = split[0].replace("_", " ") + " " + split[1];
+
+		List<String> ret = new ArrayList<>();
+
+		int argumentStartedAt = 0;
+		boolean insideQoutes = false;
+		for (int i = 0; i < text.length(); i++) {
+
+			if(text.charAt(i) == '\\') {
+				i++;
+				continue;
+			}
+
+			if(text.charAt(i) == '"') {
+				insideQoutes = !insideQoutes;
+			}
+
+			if(!insideQoutes && text.charAt(i) == ' ') {
+				ret.add(text.substring(argumentStartedAt, i));
+				argumentStartedAt = i + 1;
+			}
+		}
+		return ret;
+	}
+
     private void invoke(Message message) {
         List<Method> methods;
         if (message.text.startsWith("/")) {
+
+	        List<String> arguments = getArguments(message.text);
+	        String commandCalled = arguments.get(0);
+
+
             final boolean[] foundCommand = {false};
             commandListener.stream().filter(method ->
                         Stream.of(method.getDeclaredAnnotation(OnCommand.class).value())
-                                .anyMatch(name -> message.text.startsWith("/" + name)))
+                                .anyMatch(name -> name.toLowerCase().equals(commandCalled.toLowerCase())))
                     .forEach(method -> {
                         OnCommand onCommand = method.getDeclaredAnnotation(OnCommand.class);
                         if (onCommand.type() == ChatType.ALL
@@ -58,11 +94,9 @@ public class ReflectionListener implements GroupCommandListener, GroupMessageLis
                             foundCommand[0] = true;
                             try {
                                 method.setAccessible(true);
-                                method.invoke(listenerObject, message);
+                                method.invoke(listenerObject, message, arguments);
                             } catch (IllegalAccessException | InvocationTargetException e) {
-                                System.err.println("There seems to be a Problem with the Handler!");
-                                System.err.println("Exception thrown: " +  e.getCause().getMessage());
-                                e.getCause().printStackTrace();
+                                throw new RuntimeException("There seems to be a Problem with the Handler!", e);
                             }
                         }
                     });

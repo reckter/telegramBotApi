@@ -12,10 +12,9 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.ExceptionUtils;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -23,6 +22,8 @@ import java.util.stream.Collectors;
  * @author hannes
  */
 public class Telegram {
+
+    private static Telegram errorTelegramBot;
 
 
     public static String API_URL = "https://api.telegram.org/bot";
@@ -33,6 +34,7 @@ public class Telegram {
         public static String UPDATE = "getUpdates";
 
         public static String MESSAGE_SEND = "sendMessage";
+        public static String GET_ME = "getMe";
         public static String SEND_CHAT_ACTION = "sendChatAction";
     }
 
@@ -44,21 +46,51 @@ public class Telegram {
 
     Provider provider;
 
+    int adminChat;
+
     String apiKey;
 
     Parser parser;
 
     Optional<String> replyMarkup = Optional.empty();
 
-    public Telegram(String apiKey) {
+    public Telegram(String apiKey, boolean startPulling) {
         this.apiKey = apiKey;
         this.parser = new Parser(this);
         this.parser.staticAddParsables();
 
         this.provider = new PullProvider(1000, this);
         this.provider.setApiKey(apiKey);
-        this.provider.start();
+	    if(startPulling) {
+		    this.provider.start();
+	    }
         this.ignoreMessageBefore = System.currentTimeMillis() / 1000;
+    }
+
+    public Telegram(String apiKey, int adminChat) {
+        this(apiKey, true);
+        this.adminChat = adminChat;
+    }
+
+
+    public Telegram(String apiKey, int adminChat, String errorApiKey) {
+        this(apiKey, adminChat);
+        errorTelegramBot = new Telegram(errorApiKey, false);
+    }
+
+
+    public void sendExceptionErrorMessage(Exception e) {
+        Writer result = new StringWriter();
+        PrintWriter printWriter = new PrintWriter(result);
+        e.printStackTrace(printWriter);
+        sendErrorMessage(result.toString());
+    }
+
+    public void sendErrorMessage(String message) {
+        Telegram telegramToUse = errorTelegramBot != null ? errorTelegramBot: this;
+
+        message = "Error in Bot '" + getMe().username + "':\n" + message;
+        telegramToUse.sendMessage(adminChat, message);
     }
 
 
@@ -91,7 +123,7 @@ public class Telegram {
 
 
     public void acceptUpdate(Update update) {
-        new Thread(() -> {
+        try {
 
             if (update.message.date < ignoreMessageBefore) {
                 return;
@@ -111,7 +143,9 @@ public class Telegram {
                 }
             }
 
-        }).run();
+        } catch (Exception e) {
+            sendExceptionErrorMessage(e);
+        }
     }
 
     public Object getUpdate() {
@@ -124,6 +158,11 @@ public class Telegram {
         arguments.put("limit", String.valueOf(limit));
         arguments.put("timeout", String.valueOf(timeout));
         return apiRequest(Endpoints.UPDATE, arguments);
+    }
+
+
+    public User getMe() {
+        return (User) ((Response) apiRequest(Endpoints.GET_ME, new HashMap<>())).result[0];
     }
 
     public void setReplyMarkupToHideKeyboard(boolean selective) {
@@ -260,5 +299,10 @@ public class Telegram {
     public Telegram setIgnoreMessageBefore(long ignoreMessageBefore) {
         this.ignoreMessageBefore = ignoreMessageBefore;
         return this;
+    }
+
+    public
+    Telegram getErrorTelegramBot() {
+        return errorTelegramBot;
     }
 }
