@@ -20,4 +20,13 @@ public class User extends Chat {
 
     @JsonOptional
     public String type;
+
+    @Override
+    public String toString() {
+	    return (fistName != null ? "fistName:" + fistName + '\n' : "") +
+			    (lastName != null ? "lastName:" + lastName + '\n' : "") +
+			    (username != null ? "username:" + username + '\n' : "") +
+			    (type != null ? "type:" + type + '\n' : "") +
+			    "id:" + id;
+    }
 }

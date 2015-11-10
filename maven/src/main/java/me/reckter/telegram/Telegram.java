@@ -13,6 +13,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.ExceptionUtils;
+import org.json.JSONException;
 
 import java.io.*;
 import java.util.*;
@@ -64,12 +65,16 @@ public class Telegram {
 	    if(startPulling) {
 		    this.provider.start();
 	    }
+
         this.ignoreMessageBefore = System.currentTimeMillis() / 1000;
+
     }
 
     public Telegram(String apiKey, int adminChat) {
         this(apiKey, true);
         this.adminChat = adminChat;
+
+	    sendMessage(adminChat, "booted\n" + getMe());
     }
 
 
@@ -78,19 +83,23 @@ public class Telegram {
         errorTelegramBot = new Telegram(errorApiKey, false);
     }
 
-
     public void sendExceptionErrorMessage(Exception e) {
+        sendExceptionErrorMessage(e, "");
+    }
+
+    public void sendExceptionErrorMessage(Exception e, String additionalMessage) {
         Writer result = new StringWriter();
         PrintWriter printWriter = new PrintWriter(result);
         e.printStackTrace(printWriter);
-        sendErrorMessage(result.toString());
+        sendErrorMessage(!additionalMessage.equals("") ? ( additionalMessage + "\n\n" + result.toString()) :  result.toString());
     }
 
     public void sendErrorMessage(String message) {
         Telegram telegramToUse = errorTelegramBot != null ? errorTelegramBot: this;
 
         message = "Error in Bot '" + getMe().username + "':\n" + message;
-        telegramToUse.sendMessage(adminChat, message);
+        telegramToUse.sendMessage(adminChat, message, Optional.of(""), Optional.empty(), Optional.empty());
+
     }
 
 
@@ -235,7 +244,7 @@ public class Telegram {
 
         Object response = (apiRequest(Endpoints.MESSAGE_SEND, arguments));
         if (response instanceof Error) {
-            if (((Error) response).errorCode == 400 && ((Error) response).description.equals("Error: Message is too long")) {
+            if (((Error) response).errorCode == 400 && ((Error) response).description.equals("[Error]: Message is too long")) {
                 String text1 = text.substring(0, text.length() / 2);
                 String text2 = text.substring(text1.length(), text.length());
                 text1 += text2.split("\n", 2)[0];
@@ -245,7 +254,7 @@ public class Telegram {
                 sendMessage(chatId, text1, parseView, disableWebPageView, replyToMessageId);
                 return sendMessage(chatId, text2, parseView, disableWebPageView, replyToMessageId);
 
-            } else if(((Error) response).errorCode == 400 && ((Error) response).description.startsWith("Error: Bad Request: can't parse message text:")) {
+            } else if(((Error) response).errorCode == 400 && ((Error) response).description.startsWith("[Error]: Bad Request: can't parse message text:")) {
                 //System.out.println("Markdown parsing is wrong! Please have a look at '" + text + "'");
                 return sendMessage(chatId, text, Optional.of(""), disableWebPageView, replyToMessageId);
             } else {
@@ -276,7 +285,12 @@ public class Telegram {
             BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
             String out = rd.lines().collect(Collectors.joining());
             if (parseResponse) {
-                Object obj = parser.parse(out);
+                Object obj = null;
+                try {
+                    obj = parser.parse(out);
+                } catch (JSONException e) {
+                    sendExceptionErrorMessage(e, "couldn't parse: " + out);
+                }
                 if (obj instanceof Error) {
                     System.err.println("errNo: " + ((Error) obj).errorCode + " " + ((Error) obj).description);
                 }
@@ -289,7 +303,11 @@ public class Telegram {
         } catch (IOException e) {
             e.printStackTrace();
             throw new RuntimeException("io exception while reading api ", e);
+        } catch(Exception e) {
+            sendExceptionErrorMessage(e);
+            System.out.println("Exception from api: " + e.getMessage());
         }
+        return null;
     }
 
     public long getIgnoreMessageBefore() {
