@@ -149,10 +149,9 @@ public class Telegram {
                 return;
             }
 
-
             update.message.chat.sendAction(ChatAction.typing);
             if(update.message.chat instanceof User) {
-                if(update.message.text.startsWith("/")) {
+                if(update.message.text != null && update.message.text.startsWith("/")) {
                     boolean foundCommand = false;
                     for(UserCommandListener userCommandListener : userCommandListeners) {
                         foundCommand |= userCommandListener.onUserCommand(update.message);
@@ -164,7 +163,7 @@ public class Telegram {
                     userMessageListeners.forEach(listener -> listener.onUserMessege(update.message));
                 }
             } else {
-                if(update.message.text.startsWith("/")) {
+                if(update.message.text != null && update.message.text.startsWith("/")) {
                     boolean foundCommand = false;
                     for(GroupCommandListener groupCommandListener : groupCommandListeners) {
                         foundCommand |= groupCommandListener.onGroupCommand(update.message);
