@@ -14,6 +14,9 @@ public class Update extends BaseModel {
 
     public Message message;
 
+    @JsonProperty("editied_message")
+    public Message editedMessage;
+
     public int getId() {
         return id;
     }

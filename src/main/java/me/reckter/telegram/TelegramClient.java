@@ -3,13 +3,14 @@ package me.reckter.telegram;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.http.converter.FormHttpMessageConverter;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.util.concurrent.FailureCallback;
 import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.util.concurrent.SuccessCallback;
 import org.springframework.web.client.AsyncRestTemplate;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.Arrays;
 import java.util.Collections;
 
 /**
@@ -32,6 +33,8 @@ public class TelegramClient {
         private SuccessCallback<ResponseEntity<OUT>> successCallback;
 
         private FailureCallback failureCallback;
+
+        private boolean isFileUpload = false;
 
         private IN payload;
 
@@ -60,6 +63,11 @@ public class TelegramClient {
             return this;
         }
 
+        public RequestBuilder<OUT, IN> fileUpload() {
+            this.isFileUpload = true;
+            return this;
+        }
+
         public RequestBuilder<OUT, IN> failure(FailureCallback failureCallback) {
             this.failureCallback = failureCallback;
             return this;
@@ -73,15 +81,15 @@ public class TelegramClient {
         public ResponseEntity<OUT> request() {
             if(payload != null) {
                 if(forType != null) {
-                    return makeRequest(method, uri, forType, payload);
+                    return makeRequest(method, uri, forType, payload, isFileUpload);
                 } else {
-                    return makeRequest(method, uri, forClass, payload);
+                    return makeRequest(method, uri, forClass, payload, isFileUpload);
                 }
             } else {
                 if(forType != null) {
-                    return makeRequest(method, uri, forType);
+                    return makeRequest(method, uri, forType, isFileUpload);
                 } else {
-                    return makeRequest(method, uri, forClass);
+                    return makeRequest(method, uri, forClass, isFileUpload);
                 }
             }
         }
@@ -90,29 +98,29 @@ public class TelegramClient {
             if(payload != null) {
                 if(failureCallback != null) {
                     if(forType != null) {
-                        makeRequest(method, uri, forType, payload, successCallback, failureCallback);
+                        makeRequest(method, uri, forType, payload, successCallback, failureCallback, isFileUpload);
                     } else {
-                        makeRequest(method, uri, forClass, payload, successCallback, failureCallback);
+                        makeRequest(method, uri, forClass, payload, successCallback, failureCallback, isFileUpload);
                     }
                 } else {
                     if(forType != null) {
-                        makeRequest(method, uri, forType, payload, successCallback);
+                        makeRequest(method, uri, forType, payload, successCallback, isFileUpload);
                     } else {
-                        makeRequest(method, uri, forClass, payload, successCallback);
+                        makeRequest(method, uri, forClass, payload, successCallback, isFileUpload);
                     }
                 }
             } else {
                 if(failureCallback != null) {
                     if(forType != null) {
-                        makeRequest(method, uri, forType, successCallback, failureCallback);
+                        makeRequest(method, uri, forType, successCallback, failureCallback, isFileUpload);
                     } else {
-                        makeRequest(method, uri, forClass, successCallback, failureCallback);
+                        makeRequest(method, uri, forClass, successCallback, failureCallback, isFileUpload);
                     }
                 } else {
                     if(forType != null) {
-                        makeRequest(method, uri, forType, successCallback);
+                        makeRequest(method, uri, forType, successCallback, isFileUpload);
                     } else {
-                        makeRequest(method, uri, forClass, successCallback);
+                        makeRequest(method, uri, forClass, successCallback, isFileUpload);
                     }
                 }
             }
@@ -143,21 +151,25 @@ public class TelegramClient {
         return (new RequestBuilder<OUT, IN>()).forClass(forClass).payload(payload);
     }
 
-    private <T> ResponseEntity<T> makeRequest(HttpMethod method, String uri, Class<T> forClass) {
-        return makeRequest(method, uri, forClass, (Object) null);
+    private <T> ResponseEntity<T> makeRequest(HttpMethod method, String uri, Class<T> forClass, boolean isFileUpload) {
+        return makeRequest(method, uri, forClass, (Object) null, isFileUpload);
     }
 
-    private <T, U> ResponseEntity<T> makeRequest(HttpMethod method, String uri, Class<T> forClass, U payload) {
+    private <T, U> ResponseEntity<T> makeRequest(HttpMethod method, String uri, Class<T> forClass, U payload, boolean isFileUpload) {
         String url = apiBase + (uri.startsWith("/") ? uri.substring(1) : uri);
 
         HttpEntity<U> entity;
         if(payload == null) {
             entity = prepare(url, method);
         } else {
-            entity = prepare(url, method, payload);
+            entity = prepare(url, method, payload, isFileUpload);
         }
 
         RestTemplate restTemplate = new RestTemplate(new HttpComponentsClientHttpRequestFactory());
+        if(isFileUpload) {
+            restTemplate.getMessageConverters().add(new FormHttpMessageConverter());
+            restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
+        }
 
         restTemplate.setInterceptors(Collections.singletonList(new LoggingRequestInterceptor()));
 
@@ -165,95 +177,110 @@ public class TelegramClient {
         return ret;
     }
 
-    private <T> ResponseEntity<T> makeRequest(HttpMethod method, String uri, ParameterizedTypeReference<T> forClass) {
-        return makeRequest(method, uri, forClass, (Object) null);
+    private <T> ResponseEntity<T> makeRequest(HttpMethod method, String uri, ParameterizedTypeReference<T> forClass, boolean isFileUpload) {
+        return makeRequest(method, uri, forClass, (Object) null, isFileUpload);
     }
 
-    private <T, U> ResponseEntity<T> makeRequest(HttpMethod method, String uri, ParameterizedTypeReference<T> forClass, U payload) {
+    private <T, U> ResponseEntity<T> makeRequest(HttpMethod method, String uri, ParameterizedTypeReference<T> forClass, U payload, boolean isFileUpload) {
         String url = apiBase + (uri.startsWith("/") ? uri.substring(1) : uri);
 
         HttpEntity<U> entity;
         if(payload == null) {
             entity = prepare(url, method);
         } else {
-            entity = prepare(url, method, payload);
+            entity = prepare(url, method, payload, isFileUpload);
         }
 
         RestTemplate restTemplate = new RestTemplate(new HttpComponentsClientHttpRequestFactory());
 
+        if(isFileUpload) {
+            restTemplate.getMessageConverters().add(new FormHttpMessageConverter());
+        }
         restTemplate.setInterceptors(Collections.singletonList(new LoggingRequestInterceptor()));
 
         return restTemplate.exchange(url, method, entity, forClass);
     }
 
-    private <T> void makeRequest(HttpMethod method, String uri, Class<T> forClass, SuccessCallback<? super ResponseEntity<T>> successCallback) {
-        makeRequest(method, uri, forClass, null, successCallback, null);
+    private <T> void makeRequest(HttpMethod method, String uri, Class<T> forClass, SuccessCallback<? super ResponseEntity<T>> successCallback, boolean isFileUpload) {
+        makeRequest(method, uri, forClass, null, successCallback, null, isFileUpload);
     }
 
-    private <T> void makeRequest(HttpMethod method, String uri, Class<T> forClass, SuccessCallback<? super ResponseEntity<T>> successCallback, FailureCallback failureCallback) {
-        makeRequest(method, uri, forClass, null, successCallback, failureCallback);
+    private <T> void makeRequest(HttpMethod method, String uri, Class<T> forClass, SuccessCallback<? super ResponseEntity<T>> successCallback, FailureCallback failureCallback, boolean isFileUpload) {
+        makeRequest(method, uri, forClass, null, successCallback, failureCallback, isFileUpload);
     }
 
-    private <T, U> void makeRequest(HttpMethod method, String uri, Class<T> forClass, U payload, SuccessCallback<? super ResponseEntity<T>> successCallback) {
-        makeRequest(method, uri, forClass, payload, successCallback, null);
+    private <T, U> void makeRequest(HttpMethod method, String uri, Class<T> forClass, U payload, SuccessCallback<? super ResponseEntity<T>> successCallback, boolean isFileUpload) {
+        makeRequest(method, uri, forClass, payload, successCallback, null, isFileUpload);
     }
 
     @SuppressWarnings("Duplicates")
-    private <T, U> void makeRequest(HttpMethod method, String uri, Class<T> forClass, U payload, SuccessCallback<? super ResponseEntity<T>> successCallback, FailureCallback failureCallback) {
+    private <T, U> void makeRequest(HttpMethod method, String uri, Class<T> forClass, U payload, SuccessCallback<? super ResponseEntity<T>> successCallback, FailureCallback failureCallback, boolean isFileUpload) {
         String url = apiBase + (uri.startsWith("/") ? uri.substring(1) : uri);
 
         HttpEntity<U> entity;
         if(payload == null) {
             entity = prepare(url, method);
         } else {
-            entity = prepare(url, method, payload);
+            entity = prepare(url, method, payload, isFileUpload);
         }
 
         AsyncRestTemplate restTemplate = new AsyncRestTemplate();
+        if(isFileUpload) {
+            restTemplate.getMessageConverters().add(new FormHttpMessageConverter());
+        }
 
         ListenableFuture<ResponseEntity<T>> future = restTemplate.exchange(url, method, entity, forClass);
         future.addCallback(successCallback, failureCallback);
     }
 
-    private <T> void makeRequest(HttpMethod method, String uri, ParameterizedTypeReference<T> forClass, SuccessCallback<? super ResponseEntity<T>> successCallback) {
-        makeRequest(method, uri, forClass, null, successCallback, null);
+    private <T> void makeRequest(HttpMethod method, String uri, ParameterizedTypeReference<T> forClass, SuccessCallback<? super ResponseEntity<T>> successCallback, boolean isFileUpload) {
+        makeRequest(method, uri, forClass, null, successCallback, null, isFileUpload);
     }
 
-    private <T> void makeRequest(HttpMethod method, String uri, ParameterizedTypeReference<T> forClass, SuccessCallback<? super ResponseEntity<T>> successCallback, FailureCallback failureCallback) {
-        makeRequest(method, uri, forClass, null, successCallback, failureCallback);
+    private <T> void makeRequest(HttpMethod method, String uri, ParameterizedTypeReference<T> forClass, SuccessCallback<? super ResponseEntity<T>> successCallback, FailureCallback failureCallback, boolean isFileUpload) {
+        makeRequest(method, uri, forClass, null, successCallback, failureCallback, isFileUpload);
     }
 
-    private <T, U> void makeRequest(HttpMethod method, String uri, ParameterizedTypeReference<T> forClass, U payload, SuccessCallback<? super ResponseEntity<T>> successCallback) {
-        makeRequest(method, uri, forClass, payload, successCallback, null);
+    private <T, U> void makeRequest(HttpMethod method, String uri, ParameterizedTypeReference<T> forClass, U payload, SuccessCallback<? super ResponseEntity<T>> successCallback, boolean isFileUpload) {
+        makeRequest(method, uri, forClass, payload, successCallback, null, isFileUpload);
     }
 
     @SuppressWarnings("Duplicates")
-    private <T, U> void makeRequest(HttpMethod method, String uri, ParameterizedTypeReference<T> forClass, U payload, SuccessCallback<? super ResponseEntity<T>> successCallback, FailureCallback failureCallback) {
+    private <T, U> void makeRequest(HttpMethod method, String uri, ParameterizedTypeReference<T> forClass, U payload, SuccessCallback<? super ResponseEntity<T>> successCallback, FailureCallback failureCallback, boolean isFileUpload) {
         String url = apiBase + (uri.startsWith("/") ? uri.substring(1) : uri);
 
         HttpEntity<U> entity;
         if(payload == null) {
             entity = prepare(url, method);
         } else {
-            entity = prepare(url, method, payload);
+            entity = prepare(url, method, payload, isFileUpload);
         }
 
         AsyncRestTemplate restTemplate = new AsyncRestTemplate();
+        if(isFileUpload) {
+            restTemplate.getMessageConverters().add(new FormHttpMessageConverter());
+        }
 
         ListenableFuture<ResponseEntity<T>> future = restTemplate.exchange(url, method, entity, forClass);
         future.addCallback(successCallback, failureCallback);
     }
 
 
-    private <T> HttpEntity<T> prepare(String requestURL, HttpMethod method, T payload) {
+    private <T> HttpEntity<T> prepare(String requestURL, HttpMethod method, T payload, boolean isFileUpload) {
         HttpHeaders httpHeaders = new HttpHeaders();
 
         httpHeaders.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+        if(isFileUpload) {
+            httpHeaders.setContentType(MediaType.MULTIPART_FORM_DATA);
+        } else {
+            httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+        }
 
 
         return new HttpEntity<>(payload, httpHeaders);
     }
+
+
 
     private <T> HttpEntity<T> prepare(String requestURL, HttpMethod method) {
         HttpHeaders httpHeaders = new HttpHeaders();

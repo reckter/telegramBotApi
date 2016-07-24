@@ -2,17 +2,25 @@ package me.reckter.telegram;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import me.reckter.telegram.listener.*;
-import me.reckter.telegram.model.*;
 import me.reckter.telegram.model.Error;
+import me.reckter.telegram.model.*;
 import me.reckter.telegram.model.update.Update;
 import me.reckter.telegram.requests.*;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpMethod;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 
-import java.io.*;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 /**
  * @author hannes
@@ -34,10 +42,14 @@ public class Telegram {
         public static String UPDATE = "getUpdates";
 
         public static String SEND_MESSAGE = "sendMessage";
+        public static String EDIT_MESSAGE_TEXT = "editMessageText";
+
         public static String SEND_LOCATION = "sendMessage";
         public static String GET_ME = "getMe";
         public static String SEND_CHAT_ACTION = "sendChatAction";
         public static String SET_WEBHOOK = "setWebhook";
+
+        public static String SEND_STICKER = "sendSticker";
     }
 
     Set<UserMessageListener> userMessageListeners = new HashSet<>();
@@ -80,7 +92,7 @@ public class Telegram {
         this(apiKey, startPulling);
         this.adminChat = adminChat;
 
-         sendMessage(adminChat, "booted\n" + getMe());
+        sendMessage(adminChat, "booted\n" + getMe());
     }
 
 
@@ -94,6 +106,7 @@ public class Telegram {
         this(apiKey, adminChat, startPulling);
         errorTelegramBot = new Telegram(errorApiKey, false);
     }
+
     public void sendExceptionErrorMessage(Exception e) {
         sendExceptionErrorMessage(e, "");
     }
@@ -149,7 +162,6 @@ public class Telegram {
                 return;
             }
 
-            update.message.chat.sendAction(ChatAction.typing);
             if(update.message.chat instanceof User) {
                 if(update.message.text != null && update.message.text.startsWith("/")) {
                     boolean foundCommand = false;
@@ -177,7 +189,7 @@ public class Telegram {
             }
 
         } catch(Exception e) {
-            update.message.respond("Sorry got a hick up. Try again later.");
+            update.message.reply("Sorry got a hick up. Try again later.");
             sendExceptionErrorMessage(e);
         }
     }
@@ -201,7 +213,8 @@ public class Telegram {
             updateRequest.setTimeout(timeout);
         }
         return telegramClient
-                .requestFor(new ParameterizedTypeReference<Response<List<Update>>>() {})
+                .requestFor(new ParameterizedTypeReference<Response<List<Update>>>() {
+                })
                 .uri(Endpoints.UPDATE)
                 .payload(updateRequest)
                 .method(HttpMethod.POST)
@@ -213,7 +226,8 @@ public class Telegram {
 
     public User getMe() {
         return telegramClient
-                .requestFor(new ParameterizedTypeReference<Response<User>>() {})
+                .requestFor(new ParameterizedTypeReference<Response<User>>() {
+                })
                 .uri(Endpoints.GET_ME)
                 .method(HttpMethod.GET)
                 .request()
@@ -269,6 +283,32 @@ public class Telegram {
                 .request();
     }
 
+    public Message sendSticker(long chatId, ClassPathResource file) {
+        return sendSticker(chatId, file, Optional.empty(), Optional.empty());
+    }
+
+    public Message sendSticker(long chatId, ClassPathResource file, Optional<Boolean> disableNotifications, Optional<Integer> replyToMessageId) {
+        MultiValueMap<String, Object> parts = new LinkedMultiValueMap<>();
+        parts.add("chat_id", chatId);
+        parts.add("sticker", file);
+        if(disableNotifications.isPresent()) {
+            parts.add("disable_notification", disableNotifications.get());
+        }
+        if(replyToMessageId.isPresent()) {
+            parts.add("reply_to_message_id", replyToMessageId.get());
+        }
+
+        return telegramClient
+                .requestFor(new ParameterizedTypeReference<Response<Message>>() {})
+                .method(HttpMethod.POST)
+                .uri(Endpoints.SEND_STICKER)
+                .fileUpload()
+                .payload(parts)
+                .request()
+                .getBody()
+                .getResult();
+    }
+
     public Message sendLocation(long chatId, Location location) {
         LocationRequest locationRequest = new LocationRequest();
 
@@ -306,31 +346,31 @@ public class Telegram {
         } catch(HttpClientErrorException e) {
             try {
                 Error error = mapper.readValue(e.getResponseBodyAsByteArray(), Error.class);
-                    if(error.errorCode == 400 && error.description.equals("[Error]: Message is too long")) {
-                        MessageRequest firstHalf = new MessageRequest(messageRequest);
-                        MessageRequest secondHalf = new MessageRequest(messageRequest);
-                        String text = messageRequest.getText();
-                        String text1 = text.substring(0, text.length() / 2);
-                        String text2 = text.substring(text1.length(), text.length());
+                if(error.errorCode == 400 && error.description.contains("Message is too long")) {
+                    MessageRequest firstHalf = new MessageRequest(messageRequest);
+                    MessageRequest secondHalf = new MessageRequest(messageRequest);
+                    String text = messageRequest.getText();
+                    String text1 = text.substring(0, text.length() / 2);
+                    String text2 = text.substring(text1.length(), text.length());
 
-                        text1 += text2.split("\n", 2)[0];
-                        text2 = text2.split("\n", 2)[1];
+                    text1 += text2.split("\n", 2)[0];
+                    text2 = text2.split("\n", 2)[1];
 
-                        System.out.println("splitting message of length " + text.length() + " into " + text1.length() + " and " + text2.length());
+                    System.out.println("splitting message of length " + text.length() + " into " + text1.length() + " and " + text2.length());
 
-                        firstHalf.setText(text1);
-                        secondHalf.setText(text2);
+                    firstHalf.setText(text1);
+                    secondHalf.setText(text2);
 
-                        sendMessage(firstHalf);
-                        return sendMessage(secondHalf);
+                    sendMessage(firstHalf);
+                    return sendMessage(secondHalf);
 
-                    } else if(error.errorCode == 400 && error.description.startsWith("[Error]: Bad Request: Can't parse message text:")) {
-                        //System.out.println("Markdown parsing is wrong! Please have a look at '" + text + "'")
-                        messageRequest.setParseMode(ParseMode.NONE);
-                        return sendMessage(messageRequest);
-                    } else {
-                        throw new RuntimeException("error sending message! " + error.description + " (" + error.errorCode + ")");
-                    }
+                } else if(error.errorCode == 400 && error.description.startsWith("[Error]: Bad Request: Can't parse message text:")) {
+                    //System.out.println("Markdown parsing is wrong! Please have a look at '" + text + "'")
+                    messageRequest.setParseMode(ParseMode.NONE);
+                    return sendMessage(messageRequest);
+                } else {
+                    throw new RuntimeException("error sending message! " + error.description + " (" + error.errorCode + ")");
+                }
             } catch(IOException e1) {
                 e1.printStackTrace();
                 throw new RuntimeException(e1);
@@ -361,6 +401,39 @@ public class Telegram {
         return sendMessage(messageRequest);
     }
 
+    public void editMessage(long chatId, long messageId, String text) {
+        editMessage(chatId, messageId, text, ParseMode.NONE, Optional.empty());
+    }
+
+    public void editMessage(Message message) {
+        editMessage(message, ParseMode.NONE, Optional.empty());
+    }
+
+    public void editMessage(Message message, ParseMode parseMode, Optional<Boolean> disableWebPageView) {
+        editMessage(message.chat.id, message.id, message.text, parseMode, disableWebPageView);
+    }
+
+    public void editMessage(long chatId, long messageId, String text, ParseMode parseMode, Optional<Boolean> disableWebPageView) {
+
+        UpdateMessageRequest messageRequest = new UpdateMessageRequest();
+
+        messageRequest.setId(chatId);
+        messageRequest.setMessageId(messageId);
+        messageRequest.setText(text);
+        messageRequest.setParseMode(parseMode);
+        if(disableWebPageView.isPresent()) {
+            messageRequest.setDisableWebPagePreview(disableWebPageView.get());
+        }
+
+        telegramClient
+                .request()
+                .method(HttpMethod.POST)
+                .payload(messageRequest)
+                .uri(Endpoints.EDIT_MESSAGE_TEXT)
+                .request();
+
+    }
+
     public long getIgnoreMessageBefore() {
         return ignoreMessageBefore;
     }
@@ -368,6 +441,10 @@ public class Telegram {
     public Telegram setIgnoreMessageBefore(long ignoreMessageBefore) {
         this.ignoreMessageBefore = ignoreMessageBefore;
         return this;
+    }
+
+    public int getAdminChat() {
+        return adminChat;
     }
 
     public Telegram getErrorTelegramBot() {

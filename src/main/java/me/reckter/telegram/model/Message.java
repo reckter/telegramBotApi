@@ -85,6 +85,10 @@ public class Message extends BaseModel {
     @JsonProperty("group_chat_created")
     public boolean groupChatCreated;
 
+    //in unix
+    @JsonProperty("edit_date")
+    public int editDate;
+
 
     /**
      * reply to the message and cite it doing so.
