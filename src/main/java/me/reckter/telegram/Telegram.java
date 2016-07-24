@@ -122,7 +122,7 @@ public class Telegram {
         Telegram telegramToUse = errorTelegramBot != null ? errorTelegramBot : this;
 
         message = "Error in Bot '" + getMe().username + "':\n" + message;
-        telegramToUse.sendMessage(adminChat, message, ParseMode.NONE, Optional.empty(), Optional.empty());
+        telegramToUse.sendMessage(adminChat, message, ParseMode.NONE, Optional.empty(), Optional.empty(), Optional.empty());
 
     }
 
@@ -310,11 +310,19 @@ public class Telegram {
     }
 
     public Message sendLocation(long chatId, Location location) {
+        return sendLocation(chatId, location, Optional.empty());
+    }
+
+    public Message sendLocation(long chatId, Location location, Optional<Boolean> disableNotification) {
         LocationRequest locationRequest = new LocationRequest();
 
         locationRequest.setId(chatId);
         locationRequest.setLatitude(location.getLatitude());
         locationRequest.setLongitude(location.getLongitude());
+
+        if(disableNotification.isPresent()) {
+            locationRequest.disableNotification = disableNotification.get();
+        }
 
         return telegramClient
                 .requestFor(new ParameterizedTypeReference<Response<Message>>() {})
@@ -327,7 +335,7 @@ public class Telegram {
     }
 
     public Message sendMessage(long chatId, String text) {
-        return sendMessage(chatId, text, ParseMode.NONE, Optional.<Boolean>empty(), Optional.<Integer>empty());
+        return sendMessage(chatId, text, ParseMode.NONE, Optional.empty(), Optional.<Boolean>empty(), Optional.<Integer>empty());
     }
 
 
@@ -386,12 +394,15 @@ public class Telegram {
      * @param replyToMessageId   if this is a resopnd set to resondId
      * @return the messag send.
      */
-    public Message sendMessage(long chatId, String text, ParseMode parseMode, Optional<Boolean> disableWebPageView, Optional<Integer> replyToMessageId) {
+    public Message sendMessage(long chatId, String text, ParseMode parseMode, Optional<Boolean> disableNotification, Optional<Boolean> disableWebPageView, Optional<Integer> replyToMessageId) {
 
         MessageRequest messageRequest = new MessageRequest();
         messageRequest.setId(chatId);
         messageRequest.setText(text);
         messageRequest.setParseMode(parseMode);
+        if(disableNotification.isPresent()) {
+            messageRequest.disableNotification = disableNotification.get();
+        }
         if(disableWebPageView.isPresent()) {
             messageRequest.setDisableWebPagePreview(disableWebPageView.get());
         }

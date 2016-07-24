@@ -15,6 +15,9 @@ public class LocationRequest {
 
     float longitude;
 
+    @JsonProperty("disable_notification")
+    public boolean disableNotification;
+
     @JsonProperty("reply_to_message_id")
     int replyTo;
 

@@ -12,6 +12,8 @@ public class MessageRequest {
 
     String text;
 
+    @JsonProperty("disable_notification")
+    public boolean disableNotification;
 
     @JsonProperty("parse_mode")
     ParseMode parseMode;

@@ -97,7 +97,7 @@ public class Message extends BaseModel {
      * @return The Message send
      */
     public Message reply(String text) {
-        return ApplicationContextProvider.getContext().getBean(Telegram.class).sendMessage(chat.id, text, ParseMode.NONE, Optional.empty(), Optional.of(id));
+        return ApplicationContextProvider.getContext().getBean(Telegram.class).sendMessage(chat.id, text, ParseMode.NONE, Optional.empty(), Optional.empty(), Optional.of(id));
     }
 
     /**
