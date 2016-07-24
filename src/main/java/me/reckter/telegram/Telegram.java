@@ -44,7 +44,7 @@ public class Telegram {
         public static String SEND_MESSAGE = "sendMessage";
         public static String EDIT_MESSAGE_TEXT = "editMessageText";
 
-        public static String SEND_LOCATION = "sendMessage";
+        public static String SEND_LOCATION = "sendLocation";
         public static String GET_ME = "getMe";
         public static String SEND_CHAT_ACTION = "sendChatAction";
         public static String SET_WEBHOOK = "setWebhook";
