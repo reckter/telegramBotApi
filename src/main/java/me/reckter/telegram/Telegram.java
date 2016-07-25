@@ -308,6 +308,32 @@ public class Telegram {
         return sendSticker(chatId, file, Optional.empty(), Optional.empty());
     }
 
+
+    public Message sendSticker(long chatId, String fileId) {
+        return sendSticker(chatId, fileId, Optional.empty(), Optional.empty());
+    }
+
+    public Message sendSticker(long chatId, String fileId, Optional<Boolean> disableNotifications, Optional<Integer> replyToMessageId) {
+        StickerRequest request = new StickerRequest();
+        request.setChatId(chatId);
+        request.setSticker(fileId);
+        if(disableNotifications.isPresent()) {
+            request.setDisableNotifications(disableNotifications.get());
+        }
+        if(replyToMessageId.isPresent()) {
+            request.setReplyTo(replyToMessageId.get().longValue());
+        }
+        return telegramClient
+                .requestFor(new ParameterizedTypeReference<Response<Message>>() {
+                })
+                .method(HttpMethod.POST)
+                .uri(Endpoints.SEND_STICKER)
+                .payload(request)
+                .request()
+                .getBody()
+                .getResult();
+    }
+
     public Message sendSticker(long chatId, ClassPathResource file, Optional<Boolean> disableNotifications, Optional<Integer> replyToMessageId) {
         MultiValueMap<String, Object> parts = new LinkedMultiValueMap<>();
         parts.add("chat_id", chatId);
@@ -320,7 +346,8 @@ public class Telegram {
         }
 
         return telegramClient
-                .requestFor(new ParameterizedTypeReference<Response<Message>>() {})
+                .requestFor(new ParameterizedTypeReference<Response<Message>>() {
+                })
                 .method(HttpMethod.POST)
                 .uri(Endpoints.SEND_STICKER)
                 .fileUpload()
@@ -346,7 +373,8 @@ public class Telegram {
         }
 
         return telegramClient
-                .requestFor(new ParameterizedTypeReference<Response<Message>>() {})
+                .requestFor(new ParameterizedTypeReference<Response<Message>>() {
+                })
                 .uri(Endpoints.SEND_LOCATION)
                 .method(HttpMethod.POST)
                 .payload(locationRequest)
