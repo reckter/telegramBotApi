@@ -1,11 +1,14 @@
 package me.reckter.telegram;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import me.reckter.telegram.listener.*;
 import me.reckter.telegram.model.Error;
 import me.reckter.telegram.model.*;
 import me.reckter.telegram.model.update.Update;
 import me.reckter.telegram.requests.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpMethod;
@@ -26,6 +29,8 @@ import java.util.Set;
  * @author hannes
  */
 public class Telegram {
+
+    private static Logger LOG = LoggerFactory.getLogger(Telegram.class);
 
     private static Telegram errorTelegramBot;
 
@@ -161,6 +166,11 @@ public class Telegram {
             if(update.message.date < ignoreMessageBefore) {
                 return;
             }
+            if(update.editedMessage != null) {
+                //TODO
+                LOG.info("got an eddited message. ignoring them for now");
+                return;
+            }
 
             if(update.message.chat instanceof User) {
                 if(update.message.text != null && update.message.text.startsWith("/")) {
@@ -189,6 +199,15 @@ public class Telegram {
             }
 
         } catch(Exception e) {
+            if(update.message == null) {
+                LOG.error("update.message was null!");
+                ObjectMapper mapper = new ObjectMapper();
+                try {
+                    LOG.error(mapper.writeValueAsString(update));
+                } catch(JsonProcessingException e1) {
+                    e1.printStackTrace();
+                }
+            }
             update.message.reply("Sorry got a hick up. Try again later.");
             sendExceptionErrorMessage(e);
         }
