@@ -9,7 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class StickerRequest {
 
-    @JsonProperty("sticker_id")
+    @JsonProperty("chat_id")
     Long chatId;
 
     String sticker;
