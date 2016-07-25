@@ -163,12 +163,14 @@ public class Telegram {
     public void acceptUpdate(Update update) {
         try {
 
-            if(update.message.date < ignoreMessageBefore) {
-                return;
-            }
+
             if(update.editedMessage != null) {
                 //TODO
-                LOG.info("got an eddited message. ignoring them for now");
+                LOG.info("got an edited message. ignoring them for now");
+                return;
+            }
+
+            if(update.message.date < ignoreMessageBefore) {
                 return;
             }
 
