@@ -24,7 +24,7 @@ import java.util.stream.Stream;
  */
 public class ReflectionListener implements GroupCommandListener, GroupMessageListener, UserMessageListener, UserCommandListener {
 
-    private static Logger Log = LoggerFactory.getLogger(ReflectionListener.class)
+    private static Logger Log = LoggerFactory.getLogger(ReflectionListener.class);
 
     List<Method> commandListener = new ArrayList<>();
     List<Method> messageListener = new ArrayList<>();
