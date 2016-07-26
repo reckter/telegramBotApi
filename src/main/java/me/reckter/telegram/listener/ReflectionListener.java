@@ -1,8 +1,12 @@
 package me.reckter.telegram.listener;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import me.reckter.telegram.model.GroupChat;
 import me.reckter.telegram.model.Message;
 import me.reckter.telegram.model.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -14,10 +18,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
+
 /**
  * @author hannes
  */
 public class ReflectionListener implements GroupCommandListener, GroupMessageListener, UserMessageListener, UserCommandListener {
+
+    private static Logger Log = LoggerFactory.getLogger(ReflectionListener.class)
 
     List<Method> commandListener = new ArrayList<>();
     List<Method> messageListener = new ArrayList<>();
@@ -104,7 +111,7 @@ public class ReflectionListener implements GroupCommandListener, GroupMessageLis
             userCreateListener.stream().forEach(method -> invokeSimpleHandler(method, message));
         } else if(message.getLeftChatParticipant() != null) {
             userLeaveListener.stream().forEach(method -> invokeSimpleHandler(method, message));
-        } else if(message.text.startsWith("/")) {
+        } else if(message.text != null && message.text.startsWith("/")) {
 
             List<String> arguments = getArguments(message.text);
             String commandCalled = arguments.get(0);
@@ -134,7 +141,7 @@ public class ReflectionListener implements GroupCommandListener, GroupMessageLis
             }
 
 
-        } else {
+        } else if(message.text != null) {
             messageListener.stream().forEach(method -> {
                 OnMessage onMessage = method.getDeclaredAnnotation(OnMessage.class);
 
@@ -154,6 +161,13 @@ public class ReflectionListener implements GroupCommandListener, GroupMessageLis
                     e.printStackTrace();
                 }
             });
+        } else {
+            ObjectMapper objectMapper = new ObjectMapper();
+            try {
+                Log.info("could not find suitable action for " + objectMapper.writeValueAsString(message));
+            } catch(JsonProcessingException e) {
+                e.printStackTrace();
+            }
         }
 
         return true;
