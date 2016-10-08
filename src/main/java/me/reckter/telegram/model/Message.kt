@@ -87,6 +87,9 @@ class Message : BaseModel() {
     @JsonProperty("edit_date")
     var editDate: Int = 0
 
+    @JsonProperty("all_members_are_administrators")
+    var allMembersAreAdmins: Boolean? = null
+
 
     /**
      * reply to the message and cite it doing so.

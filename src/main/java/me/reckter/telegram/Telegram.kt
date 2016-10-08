@@ -1,5 +1,6 @@
 package me.reckter.telegram
 
+import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import me.reckter.telegram.listener.ListenerHandler
 import me.reckter.telegram.model.Error
@@ -55,6 +56,8 @@ class Telegram(apiKey: String, startPulling: Boolean) {
     internal var replyMarkup = Optional.empty<String>()
 
     init {
+
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
         val okHttpClient = OkHttpClient().newBuilder()
                 .connectTimeout(60, TimeUnit.SECONDS)
