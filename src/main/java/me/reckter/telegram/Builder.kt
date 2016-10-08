@@ -113,6 +113,7 @@ class UpdateMessageBuilder(val message: Message, val telegram: Telegram): Inline
     val messageRequest = UpdateMessageRequest()
     init {
         messageRequest.messageId = message.id.toLong()
+        messageRequest.id = message.chat.id
     }
 
 
