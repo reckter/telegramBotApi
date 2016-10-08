@@ -1,6 +1,5 @@
 package me.reckter.telegram;
 
-import me.reckter.telegram.model.Response;
 import me.reckter.telegram.model.update.Update;
 
 import java.util.List;

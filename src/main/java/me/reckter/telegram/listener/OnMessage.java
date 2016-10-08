@@ -1,5 +1,7 @@
 package me.reckter.telegram.listener;
 
+import me.reckter.telegram.model.MessageType;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -8,10 +10,5 @@ import java.lang.annotation.RetentionPolicy;
  */
 @Retention(RetentionPolicy.RUNTIME)
 public @interface OnMessage {
-    String regex() default ".*";
-
-    String[] matchingGroup() default {};
-
-    ChatType type() default ChatType.ALL;
-
+    public MessageType[] value() default MessageType.MESSAGE;
 }

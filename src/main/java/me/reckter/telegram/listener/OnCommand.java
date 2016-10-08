@@ -9,7 +9,4 @@ import java.lang.annotation.RetentionPolicy;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface OnCommand {
     String[] value();
-
-    ChatType type() default ChatType.ALL;
-
 }

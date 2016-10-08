@@ -8,4 +8,6 @@ import me.reckter.telegram.Telegram;
  */
 public abstract class BaseModel {
 
+    @JsonIgnore
+    public Telegram telegram;
 }

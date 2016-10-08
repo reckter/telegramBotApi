@@ -17,6 +17,25 @@ public class Update extends BaseModel {
     @JsonProperty("edited_message")
     public Message editedMessage;
 
+    @JsonProperty("callback_query")
+    public CallbackQuery callbackQuery;
+
+    public Message getEditedMessage() {
+        return editedMessage;
+    }
+
+    public void setEditedMessage(Message editedMessage) {
+        this.editedMessage = editedMessage;
+    }
+
+    public CallbackQuery getCallbackQuery() {
+        return callbackQuery;
+    }
+
+    public void setCallbackQuery(CallbackQuery callbackQuery) {
+        this.callbackQuery = callbackQuery;
+    }
+
     public int getId() {
         return id;
     }
