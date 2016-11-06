@@ -3,8 +3,10 @@ package me.reckter.telegram.listener
 import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.databind.ObjectMapper
 import me.reckter.telegram.Telegram
+import me.reckter.telegram.model.InlineQuery
 import me.reckter.telegram.model.MessageType
 import me.reckter.telegram.model.update.Update
+import me.reckter.telegram.requests.inlineMode.InlineQueryAnswer
 import org.slf4j.LoggerFactory
 
 /**
@@ -25,6 +27,8 @@ class ListenerHandler(val ignoreMessageBefore: Long, val telegram: Telegram) {
 
     val callBackListener = mutableSetOf<CallBackListener>()
 
+    var inlineQueryHandler: ((InlineQuery) -> InlineQueryAnswer)? = null
+
     fun addReflectionListener(listener: Any) {
         val reflectionListener = ReflectionListener(listener)
         commandListeners.add(reflectionListener)
@@ -39,46 +43,50 @@ class ListenerHandler(val ignoreMessageBefore: Long, val telegram: Telegram) {
         try {
 
             if (update.message != null) {
-                if (update.message.date < ignoreMessageBefore) {
+                if (update.message!!.date < ignoreMessageBefore) {
                     return
                 }
 
                 // inject telegram into message and chat
-                update.message.telegram = telegram
-                update.message.chat.telegram = telegram
+                update.message!!.telegram = telegram
+                update.message!!.chat.telegram = telegram
 
 
-                val type = update.message.type
+                val type = update.message!!.type
 
                 when (type) {
                     MessageType.COMMAND -> {
                         var found = false
-                        val arguments = getArguments(update.message.text!!)
+                        val arguments = getArguments(update.message!!.text!!)
                         commandListeners.filter { it.accepts(arguments[0]) }
                                 .forEach {
                                     found = true
-                                    it.onCommand(update.message, arguments)
+                                    it.onCommand(update.message!!, arguments)
                                 }
                         if (!found) {
-                            if(!arguments[0].contains("@")) {
-                                update.message.reply("Did not find this command.")
+                            if (!arguments[0].contains("@")) {
+                                update.message!!.reply("Did not find this command.")
                             }
                         }
                     }
                     MessageType.MESSAGE -> {
-                        messageListener.forEach { it.onMessage(update.message) }
+                        messageListener.forEach { it.onMessage(update.message!!) }
                     }
                     MessageType.LOCATION -> {
-                        locationListener.forEach { it.onLocation(update.message) }
+                        locationListener.forEach { it.onLocation(update.message!!) }
                     }
                     MessageType.EDITED -> {
-                        editListener.forEach { it.onEdit(update.message) }
+                        editListener.forEach { it.onEdit(update.message!!) }
                     }
                     else -> {
                     }
                 }
             } else if (update.callbackQuery != null) {
-                callBackListener.forEach { it.OnCallBack(update.callbackQuery) }
+                callBackListener.forEach { it.OnCallBack(update.callbackQuery!!) }
+            } else if (update.inlineQuery != null) {
+                if(inlineQueryHandler != null) {
+                    telegram.sendInlineQueryAnswer(inlineQueryHandler!!(update.inlineQuery!!))
+                }
             } else {
                 val mapper = ObjectMapper()
                 LOG.error("I DO NOT KNOW WHAT TO DO WITH THIS UPDATE!: " + mapper.writeValueAsString(update));
@@ -96,8 +104,9 @@ class ListenerHandler(val ignoreMessageBefore: Long, val telegram: Telegram) {
                     e1.printStackTrace()
                 }
 
+            } else {
+                update.message!!.reply("Sorry got a hick up. Try again later.")
             }
-            update.message.reply("Sorry got a hick up. Try again later.")
             telegram.sendExceptionErrorMessage(e)
         }
 

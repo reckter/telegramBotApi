@@ -3,13 +3,11 @@ package me.reckter.telegram
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import me.reckter.telegram.listener.ListenerHandler
-import me.reckter.telegram.model.Error
-import me.reckter.telegram.model.Location
-import me.reckter.telegram.model.Message
-import me.reckter.telegram.model.User
+import me.reckter.telegram.model.*
 import me.reckter.telegram.model.update.CallbackQuery
 import me.reckter.telegram.model.update.Update
 import me.reckter.telegram.requests.*
+import me.reckter.telegram.requests.inlineMode.InlineQueryAnswer
 import okhttp3.OkHttpClient
 import org.slf4j.LoggerFactory
 import retrofit2.Retrofit
@@ -27,33 +25,16 @@ class Telegram(apiKey: String, startPulling: Boolean) {
 
     private val telegramClient: TelegramClient
 
+    var shouldSendErrors = true
+
     internal var mapper = ObjectMapper()
-
-    object Endpoints {
-
-        var UPDATE = "getUpdates"
-
-        var SEND_MESSAGE = "sendMessage"
-        var EDIT_MESSAGE_TEXT = "editMessageText"
-
-        var SEND_LOCATION = "sendLocation"
-        var GET_ME = "getMe"
-        var SEND_CHAT_ACTION = "sendChatAction"
-        var SET_WEBHOOK = "setWebhook"
-
-        var SEND_STICKER = "sendSticker"
-    }
 
     val listenerHandler = ListenerHandler(System.currentTimeMillis() / 1000, this)
 
-
-    var provider: Provider
+    var puller: Puller
         internal set
 
     var adminChat: String = ""
-        internal set
-
-    internal var replyMarkup = Optional.empty<String>()
 
     init {
 
@@ -70,10 +51,10 @@ class Telegram(apiKey: String, startPulling: Boolean) {
                 .client(okHttpClient)
                 .build()
                 .create(TelegramClient::class.java)
-        this.provider = PullProvider(1000, this)
-        this.provider.setApiKey(apiKey)
+
+        this.puller = Puller(1000, this)
         if (startPulling) {
-            this.provider.start()
+            this.puller.start()
         }
 
 
@@ -110,9 +91,16 @@ class Telegram(apiKey: String, startPulling: Boolean) {
 
     }
 
+    constructor(apiKey: String, adminChat: String, errorApiKey: String) : this(apiKey, adminChat) {
+        errorTelegramBot = Telegram(errorApiKey, false)
+
+    }
+
+
     constructor(apiKey: String, adminChat: Int, errorApiKey: String, startPulling: Boolean) : this(apiKey, adminChat, startPulling) {
         errorTelegramBot = Telegram(errorApiKey, false)
     }
+
 
     @JvmOverloads fun sendExceptionErrorMessage(e: Exception, additionalMessage: String = "") {
         val result = StringWriter()
@@ -126,8 +114,21 @@ class Telegram(apiKey: String, startPulling: Boolean) {
         val telegramToUse = errorTelegramBot ?: this
 
         message = "Error in Bot '" + me.username + "':\n" + message
-        telegramToUse.sendMessage(adminChat, message, ParseMode.NONE, Optional.empty<Boolean>(), Optional.empty<Boolean>(), Optional.empty<Int>())
 
+        if(!shouldSendErrors) {
+            println(message)
+        }
+        try {
+            telegramToUse.sendMessage(adminChat, message, ParseMode.NONE, Optional.empty<Boolean>(), Optional.empty<Boolean>(), Optional.empty<Int>())
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+    }
+
+
+    fun inlineQueryHandler(handler: (InlineQuery) -> InlineQueryAnswer) {
+        listenerHandler.inlineQueryHandler = handler
     }
 
     fun addListener(listener: Any) {
@@ -162,37 +163,28 @@ class Telegram(apiKey: String, startPulling: Boolean) {
 
     val me: User by lazy { telegramClient.getMe().execute().body().result }
 
-    fun setReplyMarkupToHideKeyboard(selective: Boolean) {
-        replyMarkup = Optional.of("{force_reply:true,selective:$selective}")
+
+    fun forwardMessage(message: Message, chat: Chat, disableNotification: Boolean? = null)
+            = forwardMessage(message, chat.id, disableNotification)
+
+
+    fun forwardMessage(message: Message, chatId: String, disableNotification: Boolean? = null)
+            = forwardMessage(message.id, message.chat.id, chatId, disableNotification)
+
+    fun forwardMessage(messageId: Int, fromChat: String, toChat: String, disableNotification: Boolean? = null): Message {
+        return telegramClient.forwardMessage(ForwardMessageRequest().apply {
+            this.messageId = messageId
+            this.fromChat = fromChat
+            this.toChat = toChat
+            this.disableNotification = disableNotification
+        }).execute().body().result
     }
 
-    fun setReplyMarkupToCustomKeyboard(keys: Array<Array<String>>, selective: Boolean) {
-        setReplyMarkupToCustomKeyboard(keys, Optional.empty<Boolean>(), Optional.empty<Boolean>(), selective)
-    }
 
-    fun setReplyMarkupToCustomKeyboard(keys: Array<Array<String>>, resizeKeyboard: Optional<Boolean>, oneTimeKeyboard: Optional<Boolean>, selective: Boolean) {
-        val reply = StringBuilder("{\"keyboard\":[")
-        for (row in keys) {
-            reply.append("[")
-            for (key in row) {
-                reply.append("\"").append(key).append("\",")
-            }
-            reply.deleteCharAt(reply.length - 1).append("],")
-        }
-        reply.deleteCharAt(reply.length - 1).append("]")
-        if (resizeKeyboard.isPresent) {
-            reply.append(",\"resize_keyboard\":").append(resizeKeyboard.get())
-        }
-        if (oneTimeKeyboard.isPresent) {
-            reply.append(",\"one_time_keyboard\":").append(oneTimeKeyboard.get())
-        }
-        reply.append(",\"selective\":").append(selective)
-        reply.append("}")
-        replyMarkup = Optional.of(reply.toString())
-    }
-
-    fun setReplyMarkupToForceReply(selective: Boolean) {
-        replyMarkup = Optional.of("{force_reply:true,selective:$selective}")
+    fun sendInlineQueryAnswer(inlineQueryAnswer: InlineQueryAnswer) {
+        val response = telegramClient.answerInlineQuery(inlineQueryAnswer).execute()
+        if(!response.isSuccessful)
+            throw RuntimeException("inline query answer exception: ${response.errorBody().string()}")
     }
 
     fun sendChatAction(chatId: String, action: ChatAction) {
@@ -244,15 +236,22 @@ class Telegram(apiKey: String, startPulling: Boolean) {
         return ret
     }
 
-    fun buildEditMessage(message: Message) = UpdateMessageBuilder(message, this)
+    fun buildEditMessage(message: Message) = UpdateMessageBuilder(message.id, message.chat.id, this)
 
     fun buildEditMessage(message: Message, init: UpdateMessageBuilder.() -> Unit): UpdateMessageBuilder {
-        val ret = UpdateMessageBuilder(message, this)
+        val ret = UpdateMessageBuilder(message.id, message.chat.id, this)
+        ret.init()
+        return ret
+    }
+    fun buildEditMessage(chatId: String,messageId: Int, init: UpdateMessageBuilder.() -> Unit): UpdateMessageBuilder {
+        val ret = UpdateMessageBuilder(messageId, chatId, this)
         ret.init()
         return ret
     }
 
     fun sendEditMessage(message: Message, init: UpdateMessageBuilder.() -> Unit) = buildEditMessage(message, init).send()
+
+    fun sendEditMessage(chatId: String, messageId: Int, init: UpdateMessageBuilder.() -> Unit) = buildEditMessage(chatId, messageId, init).send()
 
 
     fun sendMessage(init: MessageBuilder.() -> Unit): Message {
@@ -366,19 +365,107 @@ class Telegram(apiKey: String, startPulling: Boolean) {
         telegramClient.answerCallbackQuery(answerCallbackQuery).execute()
     }
 
-
-    fun getErrorTelegramBot(): Telegram {
-        return errorTelegramBot ?: this
+    fun setWebhook(url: String) {
+        telegramClient.setWebhook(WebhookRequest().apply {
+            this.url = url
+        }).execute()
+        puller.end()
     }
+
+    fun setWebhook(url: String, certificate: File) {
+        telegramClient.setWebhook(url, certificate).execute()
+        puller.end()
+    }
+
+
+    private fun deleteWebhook() {
+        telegramClient.deleteWebhook()
+    }
+
+    fun getWebhookInfo(): WebhookInfo = telegramClient.getWebhookInfo().execute().body().result
+
+    fun getErrorTelegramBot() = errorTelegramBot ?: this
 
     companion object {
 
         private val LOG = LoggerFactory.getLogger(Telegram::class.java)
 
-        private var errorTelegramBot: Telegram? = null
+        var errorTelegramBot: Telegram? = null
 
 
         var API_URL = "https://api.telegram.org/bot"
     }
+
+    class Builder {
+        lateinit var apiToken: String
+        var errorToken: String? = null
+        var adminChat: String? = null
+        var webHook: String? = null
+        var certificate: File? = null
+
+        fun apiToken(apiToken: String): Builder {
+            this.apiToken = apiToken
+            return this
+        }
+
+        fun certificate(certificate: File): Builder {
+            this.certificate = certificate
+            return this;
+        }
+
+        fun adminChat(adminChat: String): Builder {
+            this.adminChat = adminChat
+            return this;
+        }
+
+        fun errorToken(errorToken: String): Builder {
+            this.errorToken = errorToken
+            return this;
+        }
+
+        fun webHook(webHook: String): Builder {
+            this.webHook = webHook
+            return this;
+        }
+
+        fun build(): Telegram {
+            val ret = Telegram(apiToken, false)
+            if(errorToken != null) {
+                Telegram.errorTelegramBot = Telegram(errorToken!!, false)
+            }
+            if(adminChat != null) {
+                ret.adminChat = adminChat!!
+                ret.sendMessage {
+                    recipient(adminChat!!)
+                    text("booted")
+                }
+            }
+            if(webHook != null) {
+                if(certificate != null) {
+                    ret.setWebhook(webHook!!, certificate!!)
+                } else {
+                    ret.setWebhook(webHook!!)
+                }
+                Thread {
+                    val time = System.currentTimeMillis()
+                    Thread.sleep(5 * 1000)
+                    val info = ret.getWebhookInfo()
+                    if(info.lastErrorTime > time) {
+                        LOG.error("webhook doesn't seem to work! Defaulting to pulling")
+                        ret.deleteWebhook()
+                        ret.puller.start()
+                    }
+                }
+            } else {
+                ret.puller.start()
+            }
+
+            return ret
+
+        }
+
+
+    }
+
 }
 

@@ -109,11 +109,11 @@ class MessageBuilder(val telegram: Telegram): InlineBuildable<MessageBuilder> {
 }
 
 
-class UpdateMessageBuilder(val message: Message, val telegram: Telegram): InlineBuildable<UpdateMessageBuilder> {
+class UpdateMessageBuilder(id: Int, chatId: String, val telegram: Telegram): InlineBuildable<UpdateMessageBuilder> {
     val messageRequest = UpdateMessageRequest()
     init {
-        messageRequest.messageId = message.id.toLong()
-        messageRequest.id = message.chat.id
+        messageRequest.messageId = id.toLong()
+        messageRequest.id = chatId
     }
 
 

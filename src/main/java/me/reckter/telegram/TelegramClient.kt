@@ -3,8 +3,10 @@ package me.reckter.telegram
 import me.reckter.telegram.model.Message
 import me.reckter.telegram.model.Response
 import me.reckter.telegram.model.User
+import me.reckter.telegram.model.WebhookInfo
 import me.reckter.telegram.model.update.Update
 import me.reckter.telegram.requests.*
+import me.reckter.telegram.requests.inlineMode.InlineQueryAnswer
 import retrofit2.Call
 import retrofit2.http.*
 import java.io.File
@@ -13,10 +15,13 @@ interface TelegramClient {
 
 
     @POST("sendMessage")
-    fun sendMessage(@Body messageRequest: MessageRequest) : Call<Response<Message>>
+    fun sendMessage(@Body messageRequest: MessageRequest): Call<Response<Message>>
+
+    @POST("forwardMessage")
+    fun forwardMessage(@Body forwardMessageRequest: ForwardMessageRequest): Call<Response<Message>>
 
     @POST("getUpdates")
-    fun getUpdates(@Body updateRequest: UpdateRequest) : Call<Response<List<Update>>>
+    fun getUpdates(@Body updateRequest: UpdateRequest): Call<Response<List<Update>>>
 
     @POST("editMessageText")
     fun editMessage(@Body updateMessageRequest: UpdateMessageRequest): Call<Response<Message>>
@@ -30,11 +35,23 @@ interface TelegramClient {
     @POST("sendChatAction")
     fun sendChatAction(@Body chatActionRequest: ChatActionRequest): Call<Any>
 
-//    @POST("setWebhook")
-//    fun setWebhook(@Body webho)
+    @POST("setWebhook")
+    fun setWebhook(@Body webhookRequest: WebhookRequest): Call<Any>
+
+
+    @POST("setWebhook")
+    fun deleteWebhook(): Call<Any>
+
+    @Multipart
+    @POST("setWebhook")
+    fun setWebhook(@Part("url") url: String, @Part("certificate") file: File): Call<Any>
+
+    @GET("getWebhookInfo")
+    fun getWebhookInfo(): Call<Response<WebhookInfo>>
 
     @POST("sendSticker")
     fun sendSticker(@Body stickerRequest: StickerRequest): Call<Response<Message>>
+
 
     @Multipart
     @POST("sendSticker")
@@ -43,5 +60,8 @@ interface TelegramClient {
 
     @POST("answerCallbackQuery")
     fun answerCallbackQuery(@Body answerCallbackQuery: AnswerCallbackQuery): Call<Any>
+
+    @POST("answerInlineQuery")
+    fun answerInlineQuery(@Body inlineQueryAnswer: InlineQueryAnswer): Call<Any>
 
 }

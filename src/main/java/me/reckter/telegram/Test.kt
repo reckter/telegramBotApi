@@ -6,6 +6,9 @@ import me.reckter.telegram.listener.OnLocation
 import me.reckter.telegram.listener.OnMessage
 import me.reckter.telegram.model.Message
 import me.reckter.telegram.model.update.CallbackQuery
+import me.reckter.telegram.requests.inlineMode.InlineQueryAnswer
+import me.reckter.telegram.requests.inlineMode.InlineQueryResultArticle
+import me.reckter.telegram.requests.inlineMode.InputTextMessageContent
 
 /**
  * @author Hannes Güdelhöfer
@@ -78,12 +81,30 @@ open class Test {
 
     companion object {
 
-
         @JvmStatic fun main(args: Array<String>) {
             val test = Test()
-            val telegram = Telegram(System.getenv("telegram.bot-token"), System.getenv("telegram.admin-chat"))
+            val telegram = Telegram.Builder()
+                    .apiToken(System.getenv("telegram.bot-token"))
+                    .adminChat(System.getenv("telegram.admin-chat"))
+                    .build()
             test.telegram = telegram;
             telegram.addListener(test)
+
+            telegram.inlineQueryHandler { query ->
+                Thread.sleep(7 * 1000)
+                val answer = InlineQueryAnswer(query.id, cacheTime = 0)
+                (1..10).forEach {
+                    val article = InlineQueryResultArticle()
+                    article.title = "result $it"
+                    article.inputMessageContent = InputTextMessageContent().apply {
+                        text = "result $it text"
+                    }
+                    article.id = it.toString()
+                    answer.results.add(article)
+                }
+
+                answer
+            }
 
         }
     }
