@@ -24,7 +24,7 @@ interface TelegramClient {
     fun getUpdates(@Body updateRequest: UpdateRequest): Call<Response<List<Update>>>
 
     @POST("editMessageText")
-    fun editMessage(@Body updateMessageRequest: UpdateMessageRequest): Call<Response<Message>>
+    fun editMessage(@Body updateMessageRequest: UpdateMessageRequest): Call<Any>
 
     @POST("sendLocation")
     fun sendLocation(@Body locationRequest: LocationRequest): Call<Response<Message>>

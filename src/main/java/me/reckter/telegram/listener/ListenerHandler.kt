@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import me.reckter.telegram.Telegram
 import me.reckter.telegram.model.InlineQuery
 import me.reckter.telegram.model.MessageType
+import me.reckter.telegram.model.update.ChosenInlineResult
 import me.reckter.telegram.model.update.Update
 import me.reckter.telegram.requests.inlineMode.InlineQueryAnswer
 import org.slf4j.LoggerFactory
@@ -28,6 +29,8 @@ class ListenerHandler(val ignoreMessageBefore: Long, val telegram: Telegram) {
     val callBackListener = mutableSetOf<CallBackListener>()
 
     var inlineQueryHandler: ((InlineQuery) -> InlineQueryAnswer)? = null
+
+    var inlineResultHandler: (ChosenInlineResult) -> Unit = {}
 
     fun addReflectionListener(listener: Any) {
         val reflectionListener = ReflectionListener(listener)
@@ -87,6 +90,8 @@ class ListenerHandler(val ignoreMessageBefore: Long, val telegram: Telegram) {
                 if(inlineQueryHandler != null) {
                     telegram.sendInlineQueryAnswer(inlineQueryHandler!!(update.inlineQuery!!))
                 }
+            } else if(update.chosenInlineResult != null) {
+                inlineResultHandler(update.chosenInlineResult!!)
             } else {
                 val mapper = ObjectMapper()
                 LOG.error("I DO NOT KNOW WHAT TO DO WITH THIS UPDATE!: " + mapper.writeValueAsString(update));
@@ -154,4 +159,5 @@ class ListenerHandler(val ignoreMessageBefore: Long, val telegram: Telegram) {
         ret[0] = ret[0].replace("@${telegram.me.username}", "").replace("/", "")
         return ret
     }
+
 }

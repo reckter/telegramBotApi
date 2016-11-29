@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import me.reckter.telegram.listener.ListenerHandler
 import me.reckter.telegram.model.*
 import me.reckter.telegram.model.update.CallbackQuery
+import me.reckter.telegram.model.update.ChosenInlineResult
 import me.reckter.telegram.model.update.Update
 import me.reckter.telegram.requests.*
 import me.reckter.telegram.requests.inlineMode.InlineQueryAnswer
@@ -127,8 +128,14 @@ class Telegram(apiKey: String, startPulling: Boolean) {
     }
 
 
-    fun inlineQueryHandler(handler: (InlineQuery) -> InlineQueryAnswer) {
+
+    fun inlineQueryHandler(handler: (InlineQuery) -> InlineQueryAnswer): InlineResultHandlerBuilder {
         listenerHandler.inlineQueryHandler = handler
+        return InlineResultHandlerBuilder(this)
+    }
+
+    fun inlineResultHandler(handler: (ChosenInlineResult) -> Unit) {
+        listenerHandler.inlineResultHandler = handler
     }
 
     fun addListener(listener: Any) {
@@ -184,7 +191,7 @@ class Telegram(apiKey: String, startPulling: Boolean) {
     fun sendInlineQueryAnswer(inlineQueryAnswer: InlineQueryAnswer) {
         val response = telegramClient.answerInlineQuery(inlineQueryAnswer).execute()
         if(!response.isSuccessful)
-            throw RuntimeException("inline query answer exception: ${response.errorBody().string()}")
+            throw RuntimeException("inline query answer exception: ${response.errorBody().string()} result: ${ObjectMapper().writeValueAsString(inlineQueryAnswer)}")
     }
 
     fun sendChatAction(chatId: String, action: ChatAction) {
@@ -238,16 +245,27 @@ class Telegram(apiKey: String, startPulling: Boolean) {
 
     fun buildEditMessage(message: Message) = UpdateMessageBuilder(message.id, message.chat.id, this)
 
+
+    fun buildEditMessage(inlineMessageId: String, init: UpdateMessageBuilder.() -> Unit): UpdateMessageBuilder {
+        val ret = UpdateMessageBuilder(inlineMessageId, this)
+        ret.init()
+        return ret
+    }
+
     fun buildEditMessage(message: Message, init: UpdateMessageBuilder.() -> Unit): UpdateMessageBuilder {
         val ret = UpdateMessageBuilder(message.id, message.chat.id, this)
         ret.init()
         return ret
     }
+
     fun buildEditMessage(chatId: String,messageId: Int, init: UpdateMessageBuilder.() -> Unit): UpdateMessageBuilder {
         val ret = UpdateMessageBuilder(messageId, chatId, this)
         ret.init()
         return ret
     }
+
+
+    fun sendEditMessage(inlineMessageId: String, init: UpdateMessageBuilder.() -> Unit) = buildEditMessage(inlineMessageId, init).send()
 
     fun sendEditMessage(message: Message, init: UpdateMessageBuilder.() -> Unit) = buildEditMessage(message, init).send()
 
@@ -275,8 +293,12 @@ class Telegram(apiKey: String, startPulling: Boolean) {
             var text1 = text.substring(0, text.length / 2)
             var text2 = text.substring(text1.length, text.length)
 
-            text1 += text2.split("\n".toRegex(), 2).toTypedArray()[0]
-            text2 = text2.split("\n".toRegex(), 2).toTypedArray()[1]
+            val split = text2.split("\n".toRegex(), 2)
+
+            if(split.size == 2) {
+                text1 += split.toTypedArray ()[0]
+                text2 = split.toTypedArray()[1]
+            }
 
             println("splitting message of length " + text.length + " into " + text1.length + " and " + text2.length)
 
@@ -331,16 +353,17 @@ class Telegram(apiKey: String, startPulling: Boolean) {
 
 
     fun editMessage(updateMessageRequest: UpdateMessageRequest) {
-
         telegramClient.editMessage(updateMessageRequest).execute()
     }
+
+
 
     @JvmOverloads fun editMessage(chatId: String, messageId: Long, text: String, parseMode: ParseMode = ParseMode.NONE, disableWebPageView: Optional<Boolean> = Optional.empty<Boolean>()) {
 
         val messageRequest = UpdateMessageRequest()
 
         messageRequest.id = chatId.toString()
-        messageRequest.setMessageId(messageId)
+        messageRequest.messageId = messageId
         messageRequest.text = text
         messageRequest.parseMode = parseMode
         if (disableWebPageView.isPresent) {
@@ -467,5 +490,9 @@ class Telegram(apiKey: String, startPulling: Boolean) {
 
     }
 
+}
+
+class InlineResultHandlerBuilder(val telegram: Telegram) {
+    fun onResult(handler: (ChosenInlineResult) -> Unit) = telegram.inlineResultHandler(handler)
 }
 

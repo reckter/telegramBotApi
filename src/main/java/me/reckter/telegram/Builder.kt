@@ -109,12 +109,19 @@ class MessageBuilder(val telegram: Telegram): InlineBuildable<MessageBuilder> {
 }
 
 
-class UpdateMessageBuilder(id: Int, chatId: String, val telegram: Telegram): InlineBuildable<UpdateMessageBuilder> {
+class UpdateMessageBuilder(val telegram: Telegram): InlineBuildable<UpdateMessageBuilder> {
+
     val messageRequest = UpdateMessageRequest()
-    init {
+
+    constructor(id: Int, chatId: String, telegram: Telegram) : this(telegram) {
         messageRequest.messageId = id.toLong()
         messageRequest.id = chatId
     }
+
+    constructor(inlineMessageId: String, telegram: Telegram) : this(telegram) {
+        messageRequest.inlineMessageId = inlineMessageId
+    }
+
 
 
     fun text(text: String): UpdateMessageBuilder {
@@ -147,9 +154,7 @@ class UpdateMessageBuilder(id: Int, chatId: String, val telegram: Telegram): Inl
         return messageRequest
     }
 
-    fun send() {
-        return telegram.editMessage(messageRequest)
-    }
+    fun send() = telegram.editMessage(messageRequest)
 }
 
 class InlineKeyboardBuilder<T: InlineBuildable<T>>(val messageBuilder: T){

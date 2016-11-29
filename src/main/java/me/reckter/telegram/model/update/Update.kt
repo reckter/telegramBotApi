@@ -25,4 +25,7 @@ class Update : BaseModel() {
     @JsonProperty("inline_query")
     var inlineQuery: InlineQuery? = null
 
+    @JsonProperty("chosen_inline_result")
+    var chosenInlineResult: ChosenInlineResult? = null
+
 }

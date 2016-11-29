@@ -6,6 +6,8 @@ import me.reckter.telegram.listener.OnLocation
 import me.reckter.telegram.listener.OnMessage
 import me.reckter.telegram.model.Message
 import me.reckter.telegram.model.update.CallbackQuery
+import me.reckter.telegram.requests.InlineKeyboardButton
+import me.reckter.telegram.requests.InlineKeyboardMarkup
 import me.reckter.telegram.requests.inlineMode.InlineQueryAnswer
 import me.reckter.telegram.requests.inlineMode.InlineQueryResultArticle
 import me.reckter.telegram.requests.inlineMode.InputTextMessageContent
@@ -91,7 +93,6 @@ open class Test {
             telegram.addListener(test)
 
             telegram.inlineQueryHandler { query ->
-                Thread.sleep(7 * 1000)
                 val answer = InlineQueryAnswer(query.id, cacheTime = 0)
                 (1..10).forEach {
                     val article = InlineQueryResultArticle()
@@ -99,11 +100,22 @@ open class Test {
                     article.inputMessageContent = InputTextMessageContent().apply {
                         text = "result $it text"
                     }
+                    article.replyMarkup = InlineKeyboardMarkup().apply {
+                        this.inlineKeyboard = mutableListOf(mutableListOf(
+                                InlineKeyboardButton().apply {
+                                    text = "test"
+                                    callbackData = "test"
+                                }
+                        ))
+                    }
                     article.id = it.toString()
                     answer.results.add(article)
+
                 }
 
                 answer
+            }.onResult { result ->
+                print("result!")
             }
 
         }
