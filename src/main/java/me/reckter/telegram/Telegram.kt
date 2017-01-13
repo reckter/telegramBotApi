@@ -272,6 +272,22 @@ class Telegram(apiKey: String, startPulling: Boolean) {
     fun sendEditMessage(chatId: String, messageId: Int, init: UpdateMessageBuilder.() -> Unit) = buildEditMessage(chatId, messageId, init).send()
 
 
+
+    fun getAdministrator(chat: Chat) = getAdministrator(chat.id)
+
+    fun getChatMember(chat: Chat, user: User) = getChatMember(chat.id, user.id)
+
+    fun getChatMemberCount(chat: Chat) = getChatMemberCount(chat.id)
+
+
+
+    fun getAdministrator(chatId: String) = telegramClient.getChatAdministrators(chatId).execute().body()
+
+    fun getChatMember(chatId: String, userId: String) = telegramClient.getChatMember(chatId, userId).execute().body()
+
+    fun getChatMemberCount(chatId: String) = telegramClient.getChatMembersCount(chatId).execute().body()
+
+
     fun sendMessage(init: MessageBuilder.() -> Unit): Message {
         return buildMessage(init).send()
     }

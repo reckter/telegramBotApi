@@ -1,9 +1,7 @@
 package me.reckter.telegram
 
-import me.reckter.telegram.model.Message
-import me.reckter.telegram.model.Response
-import me.reckter.telegram.model.User
-import me.reckter.telegram.model.WebhookInfo
+import jdk.nashorn.internal.ir.RuntimeNode
+import me.reckter.telegram.model.*
 import me.reckter.telegram.model.update.Update
 import me.reckter.telegram.requests.*
 import me.reckter.telegram.requests.inlineMode.InlineQueryAnswer
@@ -37,6 +35,15 @@ interface TelegramClient {
 
     @POST("setWebhook")
     fun setWebhook(@Body webhookRequest: WebhookRequest): Call<Any>
+
+    @GET("getChatMember")
+    fun getChatMember(@Query("chat_id") chatId: String, @Query("user_id") userId: String): Call<Response<ChatMember>>
+
+    @GET("getChatMembersCount")
+    fun getChatMembersCount(@Query("chat_id") chatId: String): Call<Response<Int>>
+
+    @GET("getChatAdministrators")
+    fun getChatAdministrators(@Query("chat_id") chatId: String): Call<Response<List<ChatMember>>>
 
 
     @POST("setWebhook")
