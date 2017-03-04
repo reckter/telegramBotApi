@@ -116,7 +116,7 @@ class Telegram(apiKey: String, startPulling: Boolean) {
 
         message = "Error in Bot '" + me.username + "':\n" + message
 
-        if(!shouldSendErrors) {
+        if (!shouldSendErrors) {
             println(message)
         }
         try {
@@ -126,7 +126,6 @@ class Telegram(apiKey: String, startPulling: Boolean) {
         }
 
     }
-
 
 
     fun inlineQueryHandler(handler: (InlineQuery) -> InlineQueryAnswer): InlineResultHandlerBuilder {
@@ -164,7 +163,11 @@ class Telegram(apiKey: String, startPulling: Boolean) {
         if (timeout != -1L) {
             updateRequest.timeout = timeout
         }
-        return telegramClient.getUpdates(updateRequest).execute().body().result
+        val result = telegramClient.getUpdates(updateRequest).execute()
+        if(!result.isSuccessful) {
+            return listOf()
+        }
+        return result.body().result
     }
 
 
@@ -190,7 +193,7 @@ class Telegram(apiKey: String, startPulling: Boolean) {
 
     fun sendInlineQueryAnswer(inlineQueryAnswer: InlineQueryAnswer) {
         val response = telegramClient.answerInlineQuery(inlineQueryAnswer).execute()
-        if(!response.isSuccessful)
+        if (!response.isSuccessful)
             throw RuntimeException("inline query answer exception: ${response.errorBody().string()} result: ${ObjectMapper().writeValueAsString(inlineQueryAnswer)}")
     }
 
@@ -258,7 +261,7 @@ class Telegram(apiKey: String, startPulling: Boolean) {
         return ret
     }
 
-    fun buildEditMessage(chatId: String,messageId: Int, init: UpdateMessageBuilder.() -> Unit): UpdateMessageBuilder {
+    fun buildEditMessage(chatId: String, messageId: Int, init: UpdateMessageBuilder.() -> Unit): UpdateMessageBuilder {
         val ret = UpdateMessageBuilder(messageId, chatId, this)
         ret.init()
         return ret
@@ -272,20 +275,29 @@ class Telegram(apiKey: String, startPulling: Boolean) {
     fun sendEditMessage(chatId: String, messageId: Int, init: UpdateMessageBuilder.() -> Unit) = buildEditMessage(chatId, messageId, init).send()
 
 
+    fun getChat(id: String): Chat? {
+        val response = telegramClient.getChat(id).execute()
+        val body = response.body()
+        return body?.result
+    }
 
     fun getAdministrator(chat: Chat) = getAdministrator(chat.id)
+
 
     fun getChatMember(chat: Chat, user: User) = getChatMember(chat.id, user.id)
 
     fun getChatMemberCount(chat: Chat) = getChatMemberCount(chat.id)
 
 
+    fun getAdministrator(chatId: String) = telegramClient.getChatAdministrators(chatId).execute().body().result
 
-    fun getAdministrator(chatId: String) = telegramClient.getChatAdministrators(chatId).execute().body()
+    fun getChatMember(chatId: String, userId: String): ChatMember? {
+        val response = telegramClient.getChatMember(chatId, userId).execute()
+        val body = response.body()
+        return body?.result
+    }
 
-    fun getChatMember(chatId: String, userId: String) = telegramClient.getChatMember(chatId, userId).execute().body()
-
-    fun getChatMemberCount(chatId: String) = telegramClient.getChatMembersCount(chatId).execute().body()
+    fun getChatMemberCount(chatId: String) = telegramClient.getChatMembersCount(chatId).execute().body().result
 
 
     fun sendMessage(init: MessageBuilder.() -> Unit): Message {
@@ -311,8 +323,8 @@ class Telegram(apiKey: String, startPulling: Boolean) {
 
             val split = text2.split("\n".toRegex(), 2)
 
-            if(split.size == 2) {
-                text1 += split.toTypedArray ()[0]
+            if (split.size == 2) {
+                text1 += split.toTypedArray()[0]
                 text2 = split.toTypedArray()[1]
             }
 
@@ -371,7 +383,6 @@ class Telegram(apiKey: String, startPulling: Boolean) {
     fun editMessage(updateMessageRequest: UpdateMessageRequest) {
         telegramClient.editMessage(updateMessageRequest).execute()
     }
-
 
 
     @JvmOverloads fun editMessage(chatId: String, messageId: Long, text: String, parseMode: ParseMode = ParseMode.NONE, disableWebPageView: Optional<Boolean> = Optional.empty<Boolean>()) {
@@ -469,18 +480,18 @@ class Telegram(apiKey: String, startPulling: Boolean) {
 
         fun build(): Telegram {
             val ret = Telegram(apiToken, false)
-            if(errorToken != null) {
+            if (errorToken != null) {
                 Telegram.errorTelegramBot = Telegram(errorToken!!, false)
             }
-            if(adminChat != null) {
+            if (adminChat != null) {
                 ret.adminChat = adminChat!!
                 ret.sendMessage {
                     recipient(adminChat!!)
                     text("booted")
                 }
             }
-            if(webHook != null) {
-                if(certificate != null) {
+            if (webHook != null) {
+                if (certificate != null) {
                     ret.setWebhook(webHook!!, certificate!!)
                 } else {
                     ret.setWebhook(webHook!!)
@@ -489,7 +500,7 @@ class Telegram(apiKey: String, startPulling: Boolean) {
                     val time = System.currentTimeMillis()
                     Thread.sleep(5 * 1000)
                     val info = ret.getWebhookInfo()
-                    if(info.lastErrorTime > time) {
+                    if (info.lastErrorTime > time) {
                         LOG.error("webhook doesn't seem to work! Defaulting to pulling")
                         ret.deleteWebhook()
                         ret.puller.start()

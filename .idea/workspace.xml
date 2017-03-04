@@ -7,9 +7,24 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5cb5e84c-0d16-4e23-a57e-3423fa966579" name="Default" comment="">
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/telegramBotApi-0.16.3.jar" afterPath="" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/me/reckter/telegram/InlineResultHandlerBuilder.class" afterPath="$PROJECT_DIR$/target/classes/me/reckter/telegram/InlineResultHandlerBuilder.class" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/me/reckter/telegram/Telegram$Builder$build$1.class" afterPath="$PROJECT_DIR$/target/classes/me/reckter/telegram/Telegram$Builder$build$1.class" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/me/reckter/telegram/Telegram$Builder$build$2.class" afterPath="$PROJECT_DIR$/target/classes/me/reckter/telegram/Telegram$Builder$build$2.class" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/me/reckter/telegram/Telegram$Builder.class" afterPath="$PROJECT_DIR$/target/classes/me/reckter/telegram/Telegram$Builder.class" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/me/reckter/telegram/Telegram$Companion.class" afterPath="$PROJECT_DIR$/target/classes/me/reckter/telegram/Telegram$Companion.class" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/me/reckter/telegram/Telegram$me$2.class" afterPath="$PROJECT_DIR$/target/classes/me/reckter/telegram/Telegram$me$2.class" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/me/reckter/telegram/Telegram.class" afterPath="$PROJECT_DIR$/target/classes/me/reckter/telegram/Telegram.class" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/me/reckter/telegram/TelegramClient.class" afterPath="$PROJECT_DIR$/target/classes/me/reckter/telegram/TelegramClient.class" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/me/reckter/telegram/model/Chat.class" afterPath="$PROJECT_DIR$/target/classes/me/reckter/telegram/model/Chat.class" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TelegramBotApi.iml" afterPath="$PROJECT_DIR$/TelegramBotApi.iml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pom.xml" afterPath="$PROJECT_DIR$/pom.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/me/reckter/telegram/Telegram.kt" afterPath="$PROJECT_DIR$/src/main/java/me/reckter/telegram/Telegram.kt" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/me/reckter/telegram/TelegramClient.kt" afterPath="$PROJECT_DIR$/src/main/java/me/reckter/telegram/TelegramClient.kt" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/maven-archiver/pom.properties" afterPath="$PROJECT_DIR$/target/maven-archiver/pom.properties" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" />
     </list>
     <ignored path="TelegramBotApi.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -43,18 +58,68 @@
       <file leaf-file-name="Telegram.kt" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/java/me/reckter/telegram/Telegram.kt">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="306">
-              <caret line="273" column="63" lean-forward="false" selection-start-line="273" selection-start-column="63" selection-end-line="273" selection-end-column="63" />
+            <state relative-caret-position="201">
+              <caret line="277" column="34" lean-forward="false" selection-start-line="277" selection-start-column="34" selection-end-line="277" selection-end-column="34" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Builder.kt" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/me/reckter/telegram/Builder.kt">
+      <file leaf-file-name="UpdateRequest.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/me/reckter/telegram/requests/UpdateRequest.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2310">
-              <caret line="156" column="32" lean-forward="false" selection-start-line="156" selection-start-column="32" selection-end-line="156" selection-end-column="32" />
+            <state relative-caret-position="210">
+              <caret line="14" column="11" lean-forward="false" selection-start-line="14" selection-start-column="11" selection-end-line="14" selection-end-column="11" />
+              <folding>
+                <element signature="e#230#231#0" expanded="false" />
+                <element signature="e#259#260#0" expanded="false" />
+                <element signature="e#301#302#0" expanded="false" />
+                <element signature="e#337#338#0" expanded="false" />
+                <element signature="e#367#368#0" expanded="false" />
+                <element signature="e#395#396#0" expanded="false" />
+                <element signature="e#435#436#0" expanded="false" />
+                <element signature="e#469#470#0" expanded="false" />
+                <element signature="e#501#502#0" expanded="false" />
+                <element signature="e#531#532#0" expanded="false" />
+                <element signature="e#575#576#0" expanded="false" />
+                <element signature="e#613#614#0" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Response.java" pinned="false" current-in-tab="false">
+        <entry file="jar://$MAVEN_REPOSITORY$/com/squareup/retrofit2/retrofit/2.1.0/retrofit-2.1.0-sources.jar!/retrofit2/Response.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1395">
+              <caret line="120" column="11" lean-forward="false" selection-start-line="120" selection-start-column="11" selection-end-line="120" selection-end-column="11" />
+              <folding>
+                <element signature="e#0#4313#0" expanded="false" />
+                <element signature="imports" expanded="false" />
+                <element signature="e#3553#3554#0" expanded="false" />
+                <element signature="e#3581#3582#0" expanded="false" />
+                <element signature="e#3631#3632#0" expanded="false" />
+                <element signature="e#3666#3667#0" expanded="false" />
+                <element signature="e#3744#3745#0" expanded="false" />
+                <element signature="e#3782#3783#0" expanded="false" />
+                <element signature="e#3835#3836#0" expanded="false" />
+                <element signature="e#3873#3874#0" expanded="false" />
+                <element signature="e#3977#3978#0" expanded="false" />
+                <element signature="e#4020#4021#0" expanded="false" />
+                <element signature="e#4136#4137#0" expanded="false" />
+                <element signature="e#4157#4158#0" expanded="false" />
+                <element signature="e#4283#4284#0" expanded="false" />
+                <element signature="e#4309#4310#0" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Chat.kt" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/me/reckter/telegram/model/Chat.kt">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="180">
+              <caret line="14" column="11" lean-forward="false" selection-start-line="14" selection-start-column="11" selection-end-line="14" selection-end-column="11" />
               <folding />
             </state>
           </provider>
@@ -63,8 +128,8 @@
       <file leaf-file-name="pom.xml" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/pom.xml">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="187">
-              <caret line="14" column="16" lean-forward="false" selection-start-line="14" selection-start-column="16" selection-end-line="14" selection-end-column="16" />
+            <state relative-caret-position="105">
+              <caret line="7" column="19" lean-forward="false" selection-start-line="7" selection-start-column="19" selection-end-line="7" selection-end-column="19" />
               <folding />
             </state>
           </provider>
@@ -113,8 +178,8 @@
       <file leaf-file-name="TelegramClient.kt" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/me/reckter/telegram/TelegramClient.kt">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="231">
-              <caret line="39" column="78" lean-forward="true" selection-start-line="39" selection-start-column="78" selection-end-line="39" selection-end-column="78" />
+            <state relative-caret-position="459">
+              <caret line="74" column="67" lean-forward="false" selection-start-line="74" selection-start-column="67" selection-end-line="74" selection-end-column="67" />
               <folding>
                 <element signature="e#29#322#0" expanded="true" />
               </folding>
@@ -136,6 +201,12 @@
         <option value="Kotlin Class" />
       </list>
     </option>
+  </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>getUPDA</find>
+      <find>getCh</find>
+    </findStrings>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -195,8 +266,8 @@
         <option value="$PROJECT_DIR$/src/main/java/me/reckter/telegram/requests/UpdateMessageRequest.kt" />
         <option value="$PROJECT_DIR$/src/main/java/me/reckter/telegram/Puller.kt" />
         <option value="$PROJECT_DIR$/src/main/java/me/reckter/telegram/Builder.kt" />
-        <option value="$PROJECT_DIR$/pom.xml" />
         <option value="$PROJECT_DIR$/src/main/java/me/reckter/telegram/model/ChatMember.kt" />
+        <option value="$PROJECT_DIR$/pom.xml" />
         <option value="$PROJECT_DIR$/src/main/java/me/reckter/telegram/TelegramClient.kt" />
         <option value="$PROJECT_DIR$/src/main/java/me/reckter/telegram/Telegram.kt" />
       </list>
@@ -216,7 +287,32 @@
     </option>
   </component>
   <component name="MavenProjectNavigator">
-    <treeState />
+    <treeState>
+      <PATH>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$RootNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="telegramBotApi" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ProjectNode" />
+        </PATH_ELEMENT>
+      </PATH>
+      <PATH>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$RootNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="telegramBotApi" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ProjectNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="Lifecycle" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$LifecycleNode" />
+        </PATH_ELEMENT>
+      </PATH>
+    </treeState>
   </component>
   <component name="ProjectFrameBounds">
     <option name="width" value="1680" />
@@ -262,7 +358,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="PackagesPane" />
       <pane id="Scratches" />
       <pane id="ProjectPane">
         <subPane>
@@ -424,6 +519,7 @@
           </PATH>
         </subPane>
       </pane>
+      <pane id="PackagesPane" />
       <pane id="Scope" />
     </panes>
   </component>
@@ -863,7 +959,7 @@
       <method />
     </configuration>
     <configuration default="true" type="js.build_tools.npm" factoryName="npm">
-      <command value="run-script" />
+      <command value="run" />
       <scripts />
       <node-interpreter value="project" />
       <envs />
@@ -1034,7 +1130,13 @@
       <workItem from="1480455847622" duration="707000" />
       <workItem from="1480495257405" duration="73000" />
       <workItem from="1480779758450" duration="726000" />
-      <workItem from="1484301363812" duration="415000" />
+      <workItem from="1484301363812" duration="2087000" />
+      <workItem from="1484394704293" duration="550000" />
+      <workItem from="1485332650296" duration="1430000" />
+      <workItem from="1486144685976" duration="480000" />
+      <workItem from="1486300847853" duration="25000" />
+      <workItem from="1487240980773" duration="601000" />
+      <workItem from="1488570374459" duration="632000" />
     </task>
     <task id="LOCAL-00001" summary="all the stuff!">
       <created>1446129459968</created>
@@ -1201,7 +1303,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="241244000" />
+    <option name="totallyTimeSpent" value="246634000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1680" height="1050" extended-state="0" />
@@ -1214,14 +1316,14 @@
       <window_info id="Image Layers" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.36909872" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.18009768" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32891566" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Properties" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.48163265" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.34081632" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3028083" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32356533" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3297568" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24964234" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -1294,30 +1396,9 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/main/java/me/reckter/telegram/model/User.kt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="165">
-          <caret line="11" column="0" lean-forward="false" selection-start-line="11" selection-start-column="0" selection-end-line="11" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/com/fasterxml/jackson/core/jackson-databind/2.6.4/jackson-databind-2.6.4.jar!/com/fasterxml/jackson/databind/annotation/JsonTypeIdResolver.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="135">
-          <caret line="17" column="18" lean-forward="false" selection-start-line="17" selection-start-column="18" selection-end-line="17" selection-end-column="18" />
-        </state>
-      </provider>
-    </entry>
     <entry file="jar://$MAVEN_REPOSITORY$/com/fasterxml/jackson/core/jackson-databind/2.6.4/jackson-databind-2.6.4-sources.jar!/com/fasterxml/jackson/databind/jsontype/TypeIdResolver.java" />
     <entry file="jar://$MAVEN_REPOSITORY$/com/fasterxml/jackson/core/jackson-databind/2.6.4/jackson-databind-2.6.4-sources.jar!/com/fasterxml/jackson/databind/annotation/JsonTypeIdResolver.java" />
     <entry file="jar://$MAVEN_REPOSITORY$/com/fasterxml/jackson/core/jackson-annotations/2.6.0/jackson-annotations-2.6.0-sources.jar!/com/fasterxml/jackson/annotation/JsonTypeInfo.java" />
-    <entry file="file://$PROJECT_DIR$/src/main/java/me/reckter/telegram/model/Chat.kt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="285">
-          <caret line="21" column="43" lean-forward="false" selection-start-line="21" selection-start-column="43" selection-end-line="21" selection-end-column="43" />
-        </state>
-      </provider>
-    </entry>
     <entry file="jar://$MAVEN_REPOSITORY$/com/squareup/retrofit2/converter-jackson/2.1.0/converter-jackson-2.1.0.jar!/retrofit2/converter/jackson/JacksonConverterFactory.class">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="90">
@@ -1480,7 +1561,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="225">
           <caret line="17" column="35" lean-forward="false" selection-start-line="17" selection-start-column="35" selection-end-line="17" selection-end-column="35" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1557,26 +1637,43 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/pom.xml">
+    <entry file="file://$PROJECT_DIR$/src/main/java/me/reckter/telegram/model/Chat.kt">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="187">
-          <caret line="14" column="16" lean-forward="false" selection-start-line="14" selection-start-column="16" selection-end-line="14" selection-end-column="16" />
+        <state relative-caret-position="180">
+          <caret line="14" column="11" lean-forward="false" selection-start-line="14" selection-start-column="11" selection-end-line="14" selection-end-column="11" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/settings.xml">
+    <entry file="jar://$MAVEN_REPOSITORY$/com/squareup/retrofit2/retrofit/2.1.0/retrofit-2.1.0-sources.jar!/retrofit2/Response.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="360">
-          <caret line="24" column="30" lean-forward="false" selection-start-line="24" selection-start-column="30" selection-end-line="24" selection-end-column="30" />
-          <folding />
+        <state relative-caret-position="1395">
+          <caret line="120" column="11" lean-forward="false" selection-start-line="120" selection-start-column="11" selection-end-line="120" selection-end-column="11" />
+          <folding>
+            <element signature="e#0#4313#0" expanded="false" />
+            <element signature="imports" expanded="false" />
+            <element signature="e#3553#3554#0" expanded="false" />
+            <element signature="e#3581#3582#0" expanded="false" />
+            <element signature="e#3631#3632#0" expanded="false" />
+            <element signature="e#3666#3667#0" expanded="false" />
+            <element signature="e#3744#3745#0" expanded="false" />
+            <element signature="e#3782#3783#0" expanded="false" />
+            <element signature="e#3835#3836#0" expanded="false" />
+            <element signature="e#3873#3874#0" expanded="false" />
+            <element signature="e#3977#3978#0" expanded="false" />
+            <element signature="e#4020#4021#0" expanded="false" />
+            <element signature="e#4136#4137#0" expanded="false" />
+            <element signature="e#4157#4158#0" expanded="false" />
+            <element signature="e#4283#4284#0" expanded="false" />
+            <element signature="e#4309#4310#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/me/reckter/telegram/model/Contact.java">
+    <entry file="file://$PROJECT_DIR$/src/main/java/me/reckter/telegram/model/ChatMember.kt">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="105">
-          <caret line="7" column="13" lean-forward="false" selection-start-line="7" selection-start-column="13" selection-end-line="7" selection-end-column="13" />
+        <state relative-caret-position="120">
+          <caret line="8" column="24" lean-forward="false" selection-start-line="8" selection-start-column="24" selection-end-line="8" selection-end-column="24" />
           <folding />
         </state>
       </provider>
@@ -1589,18 +1686,55 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/me/reckter/telegram/model/ChatMember.kt">
+    <entry file="file://$PROJECT_DIR$/src/main/java/me/reckter/telegram/model/Contact.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="120">
-          <caret line="8" column="24" lean-forward="false" selection-start-line="8" selection-start-column="24" selection-end-line="8" selection-end-column="24" />
+        <state relative-caret-position="105">
+          <caret line="7" column="13" lean-forward="false" selection-start-line="7" selection-start-column="13" selection-end-line="7" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/settings.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="360">
+          <caret line="24" column="30" lean-forward="false" selection-start-line="24" selection-start-column="30" selection-end-line="24" selection-end-column="30" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/me/reckter/telegram/requests/UpdateRequest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="210">
+          <caret line="14" column="11" lean-forward="false" selection-start-line="14" selection-start-column="11" selection-end-line="14" selection-end-column="11" />
+          <folding>
+            <element signature="e#230#231#0" expanded="false" />
+            <element signature="e#259#260#0" expanded="false" />
+            <element signature="e#301#302#0" expanded="false" />
+            <element signature="e#337#338#0" expanded="false" />
+            <element signature="e#367#368#0" expanded="false" />
+            <element signature="e#395#396#0" expanded="false" />
+            <element signature="e#435#436#0" expanded="false" />
+            <element signature="e#469#470#0" expanded="false" />
+            <element signature="e#501#502#0" expanded="false" />
+            <element signature="e#531#532#0" expanded="false" />
+            <element signature="e#575#576#0" expanded="false" />
+            <element signature="e#613#614#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="105">
+          <caret line="7" column="19" lean-forward="false" selection-start-line="7" selection-start-column="19" selection-end-line="7" selection-end-column="19" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/me/reckter/telegram/TelegramClient.kt">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="231">
-          <caret line="39" column="78" lean-forward="true" selection-start-line="39" selection-start-column="78" selection-end-line="39" selection-end-column="78" />
+        <state relative-caret-position="459">
+          <caret line="74" column="67" lean-forward="false" selection-start-line="74" selection-start-column="67" selection-end-line="74" selection-end-column="67" />
           <folding>
             <element signature="e#29#322#0" expanded="true" />
           </folding>
@@ -1609,8 +1743,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/me/reckter/telegram/Telegram.kt">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="306">
-          <caret line="273" column="63" lean-forward="false" selection-start-line="273" selection-start-column="63" selection-end-line="273" selection-end-column="63" />
+        <state relative-caret-position="201">
+          <caret line="277" column="34" lean-forward="false" selection-start-line="277" selection-start-column="34" selection-end-line="277" selection-end-column="34" />
           <folding />
         </state>
       </provider>

@@ -71,4 +71,7 @@ interface TelegramClient {
     @POST("answerInlineQuery")
     fun answerInlineQuery(@Body inlineQueryAnswer: InlineQueryAnswer): Call<Any>
 
+    @GET("getChat")
+    fun getChat(@Query("chat_id") id: String): Call<Response<Chat>>
+
 }
