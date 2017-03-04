@@ -11,7 +11,8 @@ import me.reckter.telegram.requests.ChatAction
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "type", defaultImpl = User::class)
 @JsonSubTypes(JsonSubTypes.Type(User::class, name = "private"),
         JsonSubTypes.Type(GroupChat::class, name = "group"),
-        JsonSubTypes.Type(GroupChat::class, name = "supergroup"))
+        JsonSubTypes.Type(GroupChat::class, name = "supergroup"),
+        JsonSubTypes.Type(Channel::class, name = "channel"))
 open class Chat : BaseModel() {
 
     lateinit var id: String
