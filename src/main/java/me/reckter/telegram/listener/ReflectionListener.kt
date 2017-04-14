@@ -49,7 +49,7 @@ class ReflectionListener(val listener: Any) : MessageListener, CommandListener, 
                     listOf()
                 }
             }
-            if (messageTypes.size > 0) {
+            if (messageTypes.isNotEmpty()) {
                 listenerMethod.isAccessible = true
                 messageTypes.forEach {
                     methods[it]!!.add(listenerMethod)

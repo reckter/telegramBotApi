@@ -18,6 +18,7 @@
         <kotlin.version>1.0.3</kotlin.version>
     </properties>
 
+    <configuration> <args> <arg>-Xcoroutines=enable</arg> </args> </configuration>
     <dependencies>
         <dependency>
             <groupId>com.squareup.retrofit2</groupId>
