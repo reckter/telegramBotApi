@@ -17,7 +17,6 @@
         <java.version>1.8</java.version>
         <kotlin.version>1.0.3</kotlin.version>
     </properties>
-
     <configuration> <args> <arg>-Xcoroutines=enable</arg> </args> </configuration>
     <dependencies>
         <dependency>

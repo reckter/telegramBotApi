@@ -22,7 +22,6 @@ me/reckter/telegram/requests/ChatAction.class
 me/reckter/telegram/requests/LocationRequest.class
 me/reckter/telegram/model/BaseModel.class
 me/reckter/telegram/requests/ForceReply.class
-me/reckter/telegram/model/GroupChat.class
 me/reckter/telegram/model/Error.class
 me/reckter/telegram/model/PhotoSize.class
 me/reckter/telegram/requests/KeyboardButton.class

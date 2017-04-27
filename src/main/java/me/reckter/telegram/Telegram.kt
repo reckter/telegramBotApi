@@ -163,11 +163,16 @@ class Telegram(apiKey: String, startPulling: Boolean) {
         if (timeout != -1L) {
             updateRequest.timeout = timeout
         }
-        val result = telegramClient.getUpdates(updateRequest).execute()
-        if(!result.isSuccessful) {
+        try {
+            val result = telegramClient.getUpdates(updateRequest).execute()
+            if (!result.isSuccessful) {
+                return listOf()
+            }
+            return result.body().result
+        } catch( e: Exception) {
+            sendExceptionErrorMessage(e, "error while trying to pull updates")
             return listOf()
         }
-        return result.body().result
     }
 
 

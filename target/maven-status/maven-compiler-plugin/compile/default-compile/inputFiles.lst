@@ -12,7 +12,6 @@
 /Users/hannesgudelhofer/Documents/ideaProjects/TelegramBotApi/src/main/java/me/reckter/telegram/model/Sticker.java
 /Users/hannesgudelhofer/Documents/ideaProjects/TelegramBotApi/src/main/java/me/reckter/telegram/model/Audio.java
 /Users/hannesgudelhofer/Documents/ideaProjects/TelegramBotApi/src/main/java/me/reckter/telegram/model/File.java
-/Users/hannesgudelhofer/Documents/ideaProjects/TelegramBotApi/src/main/java/me/reckter/telegram/model/GroupChat.java
 /Users/hannesgudelhofer/Documents/ideaProjects/TelegramBotApi/src/main/java/me/reckter/telegram/requests/ParseMode.java
 /Users/hannesgudelhofer/Documents/ideaProjects/TelegramBotApi/src/main/java/me/reckter/telegram/requests/KeyboardButton.java
 /Users/hannesgudelhofer/Documents/ideaProjects/TelegramBotApi/src/main/java/me/reckter/telegram/requests/ChatAction.java

@@ -1,0 +1,9 @@
+{
+  "tasks": [
+    {
+      "taskName": "telegramBotApi:compile",
+      "inputChecksum": "f0ab869db371865a36d453a3fe45df98",
+      "outputChecksum": "37ce61e2c1b0c8627af67c74d5b16fbc"
+    }
+  ]
+}

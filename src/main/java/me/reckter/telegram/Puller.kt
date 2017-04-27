@@ -25,7 +25,10 @@ class Puller(var sleep: Int, var telegram: Telegram) {
 
     private val pullThread = Thread {
         while (isAlive) {
-            val updates = telegram.getUpdates(lastSeenUpdateId + 1, 100, (sleep * 100).toLong())
+            val updates = telegram.getUpdates(
+                    offset = lastSeenUpdateId + 1,
+                    limit = 100,
+                    timeout = (sleep * 100).toLong())
 
             updates.forEach { update ->
                 if (lastSeenUpdateId < update.id) {
