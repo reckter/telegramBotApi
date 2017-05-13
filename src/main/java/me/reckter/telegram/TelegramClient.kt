@@ -15,6 +15,10 @@ interface TelegramClient {
     @POST("sendMessage")
     fun sendMessage(@Body messageRequest: MessageRequest): Call<Response<Message>>
 
+
+    @POST("sendPhoto")
+    fun sendPhoto(@Body photoRequest: PhotoRequest): Call<Response<Message>>
+
     @POST("forwardMessage")
     fun forwardMessage(@Body forwardMessageRequest: ForwardMessageRequest): Call<Response<Message>>
 

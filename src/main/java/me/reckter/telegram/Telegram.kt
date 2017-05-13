@@ -169,7 +169,7 @@ class Telegram(apiKey: String, startPulling: Boolean) {
                 return listOf()
             }
             return result.body().result
-        } catch( e: Exception) {
+        } catch(e: Exception) {
             sendExceptionErrorMessage(e, "error while trying to pull updates")
             return listOf()
         }
@@ -209,6 +209,37 @@ class Telegram(apiKey: String, startPulling: Boolean) {
         chatActionRequest.action = action
 
         telegramClient.sendChatAction(chatActionRequest).execute()
+    }
+
+    fun sendPhoto(photoRequest: PhotoRequest): Message {
+        val response = telegramClient.sendPhoto(photoRequest).execute()
+
+        if (response.isSuccessful) {
+            return response.body().result
+        }
+        val error = mapper.readValue(response.errorBody().charStream().readText(), Error::class.java)
+
+        throw RuntimeException("error sending photo! " + error.description + " (" + error.errorCode + ")")
+    }
+
+    fun sendPhoto(
+            chatId: String,
+            photo: String,
+            caption: String? = null,
+            disableNotification: Boolean? = null,
+            replyTo: Int? = null,
+            replyMarkup: ReplyMarkup? = null
+    ): Message {
+        val request = PhotoRequest(
+                id = chatId,
+                photo = photo,
+                caption = caption,
+                disableNotification = disableNotification,
+                replyTo = replyTo,
+                replyMarkup = replyMarkup
+        )
+
+        return sendPhoto(request)
     }
 
     @JvmOverloads fun sendSticker(chatId: String, fileId: String, disableNotifications: Optional<Boolean> = Optional.empty<Boolean>(), replyToMessageId: Optional<Int> = Optional.empty<Int>()): Message {
