@@ -19,6 +19,12 @@ interface TelegramClient {
     @POST("sendPhoto")
     fun sendPhoto(@Body photoRequest: PhotoRequest): Call<Response<Message>>
 
+    @POST("sendVideo")
+    fun sendVideo(@Body videoRequest: VideoRequest): Call<Response<Message>>
+
+    @POST("sendDocument")
+    fun sendDocument(@Body documentRequest: DocumentRequest): Call<Response<Message>>
+
     @POST("forwardMessage")
     fun forwardMessage(@Body forwardMessageRequest: ForwardMessageRequest): Call<Response<Message>>
 
@@ -27,6 +33,9 @@ interface TelegramClient {
 
     @POST("editMessageText")
     fun editMessage(@Body updateMessageRequest: UpdateMessageRequest): Call<Any>
+
+    @POST("editMessageCaption")
+    fun editCaption(@Body updateCaptionRequest: UpdateCaptionRequest): Call<Any>
 
     @POST("sendLocation")
     fun sendLocation(@Body locationRequest: LocationRequest): Call<Response<Message>>
@@ -77,5 +86,6 @@ interface TelegramClient {
 
     @GET("getChat")
     fun getChat(@Query("chat_id") id: String): Call<Response<Chat>>
+
 
 }

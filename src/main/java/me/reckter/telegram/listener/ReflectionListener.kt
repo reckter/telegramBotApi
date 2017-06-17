@@ -4,11 +4,13 @@ import me.reckter.telegram.model.Message
 import me.reckter.telegram.model.MessageType
 import me.reckter.telegram.model.update.CallbackQuery
 import java.lang.reflect.Method
+import javax.print.Doc
 
 /**
  *  @author Hannes Güdelhöfer
  */
-class ReflectionListener(val listener: Any) : MessageListener, CommandListener, EditListener, LocationListener, CallBackListener {
+class ReflectionListener(val listener: Any) : MessageListener, CommandListener, EditListener, LocationListener, CallBackListener, VideoListener, DocumentListener {
+
 
 
     val methods = mutableMapOf<MessageType, MutableList<Method>>()
@@ -40,6 +42,8 @@ class ReflectionListener(val listener: Any) : MessageListener, CommandListener, 
                 listenerMethod.isAnnotationPresent(OnLocation::class.java) -> listOf(MessageType.LOCATION)
                 listenerMethod.isAnnotationPresent(OnUserJoin::class.java) -> listOf(MessageType.NEW_CHAT_PARTICIPANT)
                 listenerMethod.isAnnotationPresent(OnUserLeave::class.java) -> listOf(MessageType.LEFT_CHAT_PARTICIPANT)
+                listenerMethod.isAnnotationPresent(OnVideo::class.java) -> listOf(MessageType.VIDEO)
+                listenerMethod.isAnnotationPresent(OnDocument::class.java) -> listOf(MessageType.DOCUMENT)
                 listenerMethod.isAnnotationPresent(OnCallBack::class.java) -> {
                     listenerMethod.isAccessible = true
                     callBackListener.add(listenerMethod)
@@ -98,5 +102,13 @@ class ReflectionListener(val listener: Any) : MessageListener, CommandListener, 
 
     override fun OnCallBack(callbackQuery: CallbackQuery) {
         callBackListener.forEach { it.invoke(listener, callbackQuery) }
+    }
+
+    override fun onVideo(message: Message) {
+        methods[message.type]!!.forEach { it.invoke(listener, message) }
+    }
+
+    override fun onDocument(message: Message) {
+        methods[message.type]!!.forEach { it.invoke(listener, message) }
     }
 }

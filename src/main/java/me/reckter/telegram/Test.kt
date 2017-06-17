@@ -1,9 +1,6 @@
 package me.reckter.telegram
 
-import me.reckter.telegram.listener.OnCallBack
-import me.reckter.telegram.listener.OnCommand
-import me.reckter.telegram.listener.OnLocation
-import me.reckter.telegram.listener.OnMessage
+import me.reckter.telegram.listener.*
 import me.reckter.telegram.model.Message
 import me.reckter.telegram.model.update.CallbackQuery
 import me.reckter.telegram.requests.InlineKeyboardButton
@@ -80,6 +77,24 @@ open class Test {
     fun test(message: Message) {
         message.reply("passed!")
     }
+
+
+    @OnDocument()
+    fun onVideo(message: Message) {
+        if(message.document != null) {
+            val document = message.document!!
+            if(document.mimeType.contains("video")) {
+                val id = document.id
+                val message = telegram.sendDocument(message.chat.id, id, "lol")
+
+                Thread.sleep(3000)
+
+                telegram.editCaption(message.chat.id, message.id, "test")
+            }
+        }
+
+    }
+
 
     companion object {
 

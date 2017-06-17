@@ -14,14 +14,15 @@ me/reckter/telegram/model/MessageType.class
 me/reckter/telegram/listener/OnUserJoin.class
 me/reckter/telegram/model/Video.class
 me/reckter/telegram/listener/OnUserLeave.class
+me/reckter/telegram/listener/OnDocument.class
 me/reckter/telegram/model/Location.class
 me/reckter/telegram/requests/InlineKeyboardMarkup.class
 me/reckter/telegram/model/ReplyKeyboardMarkup.class
 me/reckter/telegram/model/Contact.class
 me/reckter/telegram/requests/ChatAction.class
-me/reckter/telegram/requests/LocationRequest.class
 me/reckter/telegram/model/BaseModel.class
 me/reckter/telegram/requests/ForceReply.class
+me/reckter/telegram/listener/OnVideo.class
 me/reckter/telegram/model/Error.class
 me/reckter/telegram/model/PhotoSize.class
 me/reckter/telegram/requests/KeyboardButton.class

@@ -16,6 +16,7 @@ import retrofit2.converter.jackson.JacksonConverterFactory
 import java.io.File
 import java.io.PrintWriter
 import java.io.StringWriter
+import java.time.Duration
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -39,7 +40,7 @@ class Telegram(apiKey: String, startPulling: Boolean) {
 
     init {
 
-        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
 
         val okHttpClient = OkHttpClient().newBuilder()
                 .connectTimeout(60, TimeUnit.SECONDS)
@@ -242,6 +243,76 @@ class Telegram(apiKey: String, startPulling: Boolean) {
         return sendPhoto(request)
     }
 
+    fun sendVideo(videoRequest: VideoRequest): Message {
+        val request = telegramClient.sendVideo(videoRequest)
+
+        val response = request.execute()
+
+        if (response.isSuccessful) {
+            return response.body().result
+        }
+        val error = mapper.readValue(response.errorBody().charStream().readText(), Error::class.java)
+
+        throw RuntimeException("error sending photo! " + error.description + " (" + error.errorCode + ")")
+    }
+
+    fun sendDocument(
+            chatId: String,
+            document: String,
+            caption: String? = null,
+            disableNotification: Boolean? = null,
+            replyTo: Int? = null,
+            replyMarkup: ReplyMarkup? = null
+    ): Message {
+        val request = DocumentRequest(
+                id = chatId,
+                document = document,
+                caption = caption,
+                disableNotification = disableNotification,
+                replyTo = replyTo,
+                replyMarkup = replyMarkup
+        )
+        return sendDocument(request)
+    }
+
+    fun sendDocument(documentRequest: DocumentRequest): Message {
+        val request = telegramClient.sendDocument(documentRequest)
+
+        val response = request.execute()
+
+        if (response.isSuccessful) {
+            return response.body().result
+        }
+        val error = mapper.readValue(response.errorBody().charStream().readText(), Error::class.java)
+
+        throw RuntimeException("error sending photo! " + error.description + " (" + error.errorCode + ")")
+    }
+
+    fun sendVideo(
+            chatId: String,
+            video: String,
+            duration: Int? = null,
+            width: Int? = null,
+            height: Int? = null,
+            caption: String? = null,
+            disableNotification: Boolean? = null,
+            replyTo: Int? = null,
+            replyMarkup: ReplyMarkup? = null
+    ): Message {
+        val request = VideoRequest(
+                id = chatId,
+                video = video,
+                duration = duration,
+                width = width,
+                height = height,
+                caption = caption,
+                disableNotification = disableNotification,
+                replyTo = replyTo,
+                replyMarkup = replyMarkup
+        )
+        return sendVideo(request)
+    }
+
     @JvmOverloads fun sendSticker(chatId: String, fileId: String, disableNotifications: Optional<Boolean> = Optional.empty<Boolean>(), replyToMessageId: Optional<Int> = Optional.empty<Int>()): Message {
         val request = StickerRequest()
         request.chatId = chatId
@@ -260,16 +331,14 @@ class Telegram(apiKey: String, startPulling: Boolean) {
         return telegramClient.sendSticker(chatId, file).execute().body().result // TODO optional stuff
     }
 
-    @JvmOverloads fun sendLocation(chatId: Long, location: Location, disableNotification: Optional<Boolean> = Optional.empty<Boolean>()): Message {
+    @JvmOverloads
+    fun sendLocation(chatId: String, location: Location, disableNotification: Boolean? = null): Message {
         val locationRequest = LocationRequest()
 
         locationRequest.id = chatId
         locationRequest.latitude = location.latitude
         locationRequest.longitude = location.longitude
-
-        if (disableNotification.isPresent) {
-            locationRequest.disableNotification = disableNotification.get()
-        }
+        locationRequest.disableNotification = disableNotification
 
         return telegramClient.sendLocation(locationRequest).execute().body().result
     }
@@ -350,7 +419,7 @@ class Telegram(apiKey: String, startPulling: Boolean) {
         val error = mapper.readValue(response.errorBody().charStream().readText(), Error::class.java)
 
 
-        if (error.errorCode == 400 && error.description.contains("Message is too long")) {
+        if (error.errorCode == 400 && error.description.toLowerCase().contains("message is too long")) {
             val firstHalf = MessageRequest(messageRequest)
             val secondHalf = MessageRequest(messageRequest)
             val text = messageRequest.text
@@ -413,6 +482,26 @@ class Telegram(apiKey: String, startPulling: Boolean) {
 
     @JvmOverloads fun editMessage(message: Message, parseMode: ParseMode = ParseMode.NONE, disableWebPageView: Optional<Boolean> = Optional.empty<Boolean>()) {
         editMessage(message.chat.id, message.id.toLong(), message.text!!, parseMode, disableWebPageView)
+    }
+
+    fun editCaption(updateCaptionRequest: UpdateCaptionRequest) {
+        telegramClient.editCaption(updateCaptionRequest).execute()
+    }
+
+    fun editCaption(
+            chatId: String,
+            messageId: Int,
+            caption: String? = null,
+            replyMarkup: ReplyMarkup? = null
+    ) {
+        val request = UpdateCaptionRequest(
+                chatId = chatId,
+                messageId = messageId,
+                caption = caption,
+                replyMarkup = replyMarkup
+        )
+
+        editCaption(request)
     }
 
 

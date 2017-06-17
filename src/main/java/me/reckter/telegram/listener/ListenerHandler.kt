@@ -26,6 +26,10 @@ class ListenerHandler(val ignoreMessageBefore: Long, val telegram: Telegram) {
 
     val editListener = mutableSetOf<EditListener>()
 
+    val videoListeners = mutableSetOf<VideoListener>()
+
+    val documentListeners = mutableSetOf<DocumentListener>()
+
     val callBackListener = mutableSetOf<CallBackListener>()
 
     var inlineQueryHandler: ((InlineQuery) -> InlineQueryAnswer)? = null
@@ -39,6 +43,8 @@ class ListenerHandler(val ignoreMessageBefore: Long, val telegram: Telegram) {
         locationListener.add(reflectionListener)
         editListener.add(reflectionListener)
         callBackListener.add(reflectionListener)
+        videoListeners.add(reflectionListener)
+        documentListeners.add(reflectionListener)
     }
 
 
@@ -81,7 +87,14 @@ class ListenerHandler(val ignoreMessageBefore: Long, val telegram: Telegram) {
                     MessageType.EDITED -> {
                         editListener.forEach { it.onEdit(update.message!!) }
                     }
+                    MessageType.VIDEO -> {
+                        videoListeners.forEach { it.onVideo(update.message!!) }
+                    }
+                    MessageType.DOCUMENT -> {
+                        documentListeners.forEach { it.onDocument(update.message!!) }
+                    }
                     else -> {
+                        LOG.error("Do not now what to do with this message type!")
                     }
                 }
             } else if (update.callbackQuery != null) {
