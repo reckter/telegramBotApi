@@ -5,7 +5,7 @@
 
     <groupId>me.reckter</groupId>
     <artifactId>telegramBotApi</artifactId>
-    <version>0.21.2</version>
+    <version>0.21.7</version>
     <packaging>jar</packaging>
 
     <name>telegramBotApi</name>

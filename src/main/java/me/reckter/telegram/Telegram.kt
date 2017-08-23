@@ -10,7 +10,9 @@ import me.reckter.telegram.model.update.Update
 import me.reckter.telegram.requests.*
 import me.reckter.telegram.requests.inlineMode.InlineQueryAnswer
 import okhttp3.OkHttpClient
+import okio.Buffer
 import org.slf4j.LoggerFactory
+import retrofit2.CallAdapter
 import retrofit2.Retrofit
 import retrofit2.converter.jackson.JacksonConverterFactory
 import java.io.File
@@ -45,6 +47,30 @@ class Telegram(apiKey: String, startPulling: Boolean) {
         val okHttpClient = OkHttpClient().newBuilder()
                 .connectTimeout(60, TimeUnit.SECONDS)
                 .readTimeout(101, TimeUnit.SECONDS)
+                .addInterceptor { chain ->
+                    val response = chain.proceed(chain.request())
+
+                    if(!response.isSuccessful) {
+
+                        val newRequest = chain.request().newBuilder().build()
+                        val buffer = Buffer()
+                        if (newRequest != null) {
+                            val body = newRequest.body()
+                            val requestString = if (body != null) {
+                                body.writeTo(buffer)
+                                buffer.readUtf8()
+                            } else "<No body send>"
+
+                            sendErrorMessage("Got an http error while trying to send: \n${newRequest.url().url()}:\n$requestString" +
+                                    "\n\n got response: \n${response.body().string()}")
+                        } else {
+                            sendErrorMessage("Got an http error while trying to send: \n${chain.request().url()}:\n <no body information available>" +
+                                    "\n\n got response: \n${response.body().string()}")
+                        }
+                    }
+
+                    response
+                }
                 .writeTimeout(60, TimeUnit.SECONDS).build()
 
         telegramClient = Retrofit.Builder()
@@ -167,6 +193,9 @@ class Telegram(apiKey: String, startPulling: Boolean) {
         try {
             val result = telegramClient.getUpdates(updateRequest).execute()
             if (!result.isSuccessful) {
+                if(result.code() == 429) {
+                    Thread.sleep(30 * 1000)
+                }
                 return listOf()
             }
             return result.body().result
@@ -506,7 +535,10 @@ class Telegram(apiKey: String, startPulling: Boolean) {
 
 
     fun editMessage(updateMessageRequest: UpdateMessageRequest) {
-        telegramClient.editMessage(updateMessageRequest).execute()
+        val response = telegramClient.editMessage(updateMessageRequest).execute()
+        if(!response.isSuccessful) {
+            sendErrorMessage("error editing message! \n" + response.errorBody().string())
+        }
     }
 
 
