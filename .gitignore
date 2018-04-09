@@ -99,3 +99,5 @@ fabric.properties
 target/
 .idea/
 *.iml
+
+.DS_Store
