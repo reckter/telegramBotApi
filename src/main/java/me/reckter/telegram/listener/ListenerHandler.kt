@@ -97,6 +97,12 @@ class ListenerHandler(val ignoreMessageBefore: Long, val telegram: Telegram) {
                         LOG.error("Do not now what to do with this message type!")
                     }
                 }
+            } else if(update.editedMessage != null) {
+                val editedMessage = update.editedMessage!!
+                editedMessage.telegram = telegram
+                editedMessage.chat.telegram = telegram
+
+              editListener.forEach { it.onEdit(editedMessage) }
             } else if (update.callbackQuery != null) {
                 callBackListener.forEach { it.OnCallBack(update.callbackQuery!!) }
             } else if (update.inlineQuery != null) {

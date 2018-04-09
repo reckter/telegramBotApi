@@ -18,16 +18,13 @@ me/reckter/telegram/listener/OnDocument.class
 me/reckter/telegram/model/Location.class
 me/reckter/telegram/requests/InlineKeyboardMarkup.class
 me/reckter/telegram/model/ReplyKeyboardMarkup.class
-me/reckter/telegram/model/Contact.class
 me/reckter/telegram/requests/ChatAction.class
 me/reckter/telegram/model/BaseModel.class
 me/reckter/telegram/requests/ForceReply.class
 me/reckter/telegram/listener/OnVideo.class
 me/reckter/telegram/model/Error.class
-me/reckter/telegram/model/PhotoSize.class
 me/reckter/telegram/requests/KeyboardButton.class
 me/reckter/telegram/requests/MessageRequest.class
 me/reckter/telegram/requests/UpdateRequest.class
 me/reckter/telegram/listener/OnMessage.class
 me/reckter/telegram/model/UserProfilePhotos.class
-me/reckter/telegram/model/File.class
