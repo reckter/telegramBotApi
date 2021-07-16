@@ -90,6 +90,9 @@ class Message : BaseModel() {
     @JsonProperty("all_members_are_administrators")
     var allMembersAreAdmins: Boolean? = null
 
+    @JsonProperty("via_bot")
+    var viaBot: User? = null
+
 
     /**
      * reply to the message and cite it doing so.

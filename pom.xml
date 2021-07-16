@@ -4,11 +4,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>me.reckter</groupId>
-    <artifactId>telegramBotApi</artifactId>
-    <version>0.24.0</version>
+    <artifactId>telegram-bot-api</artifactId>
+    <version>0.25.0</version>
     <packaging>jar</packaging>
 
-    <name>telegramBotApi</name>
+    <name>telegram-bot-api</name>
     <description>Demo project for Spring Boot</description>
 
 
@@ -122,9 +122,9 @@
 
     <distributionManagement>
         <repository>
-            <id>bintray-reckter-maven</id>
-            <name>reckter-maven</name>
-            <url>https://api.bintray.com/maven/reckter/maven/telegramBotApi/;publish=1</url>
+            <id>github</id>
+            <name>GitHub OWNER Apache Maven Packages</name>
+            <url>https://maven.pkg.github.com/reckter/telegramBotApi</url>
         </repository>
     </distributionManagement>
 
