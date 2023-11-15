@@ -9,6 +9,7 @@ import java.util.Objects;
  * Created by hannes on 13.02.16.
  */
 public enum ParseMode {
+    MARKDOWN_V2("MarkdownV2"),
     MARKDOWN("Markdown"),
     HTML("HTML"),
     NONE("");
