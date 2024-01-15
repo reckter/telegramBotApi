@@ -11,7 +11,7 @@ open class File : BaseModel() {
     var id: String? = null
 
     @JsonProperty("file_size")
-    var size: Int = 0
+    var size: Long = 0
 
     @JsonProperty("file_path")
     var path: String? = null
